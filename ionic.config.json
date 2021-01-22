@@ -1,0 +1,7 @@
+{
+  "name": "Keep Your Stuff",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
