@@ -1,0 +1,19 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title> {{category.name}} </ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list *ngIf="!isLoading">
+    <ion-item *ngFor="let stuff of stuffs">
+      <ion-thumbnail slot="start">
+        <ion-img [src]="stuff.imgUrl"></ion-img>
+      </ion-thumbnail>
+      <ion-label> {{stuff.name}} </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

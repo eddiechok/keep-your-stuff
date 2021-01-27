@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Search Stuff</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <app-spinner *ngIf="isLoading"></app-spinner>
+  <ion-virtual-scroll
+    *ngIf="!isLoading"
+    [items]="stuffs"
+    [approxItemHeight]="'60px'"
+  >
+    <ion-item *virtualItem="let stuff">
+      <ion-thumbnail slot="start">
+        <ion-img [src]="stuff.imgUrl"></ion-img>
+      </ion-thumbnail>
+      <ion-label>
+        <h2>{{stuff.name}}</h2>
+        <p>{{stuff.category.name}}, {{stuff.location.name}}</p>
+      </ion-label>
+    </ion-item>
+  </ion-virtual-scroll>
+</ion-content>

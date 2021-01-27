@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Keep My Stuff</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-segment
+    [value]="mode"
+    (ionChange)="onSegmentChange($event.detail.value)"
+  >
+    <ion-segment-button value="category"> Category </ion-segment-button>
+    <ion-segment-button value="location"> Location </ion-segment-button>
+  </ion-segment>
+  <div class="ion-padding ion-text-center" *ngIf="isLoading">
+    <ion-spinner color="primary"></ion-spinner>
+  </div>
+  <ion-list *ngIf="!isLoading && mode === 'category'">
+    <ion-item
+      *ngFor="let category of categories"
+      [routerLink]="['/stuff', 'by-category', category.id]"
+      button
+    >
+      <ion-icon slot="start" [name]="category.icon" [color]="'primary'">
+      </ion-icon>
+      <ion-label>
+        <h2>{{category.name}}</h2>
+        <p>Stuff: {{category.stuffs}}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-list *ngIf="!isLoading && mode === 'location'">
+    <ion-item *ngFor="let location of locations">
+      <ion-icon slot="start" name="location" [color]="location.color">
+      </ion-icon>
+      <ion-label>
+        <h2>{{location.name}}</h2>
+        <p>Stuff: {{location.stuffs}}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

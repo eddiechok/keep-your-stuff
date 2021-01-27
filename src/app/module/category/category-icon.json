@@ -1,0 +1,114 @@
+[
+  {
+    "icon": "home-outline",
+    "name": "Home"
+  },
+  {
+    "icon": "car-sport-outline",
+    "name": "Sport Car"
+  },
+  {
+    "icon": "gift-outline",
+    "name": "Gift"
+  },
+  {
+    "icon": "football-outline",
+    "name": "Football"
+  },
+  {
+    "icon": "tv-outline",
+    "name": "TV"
+  },
+  {
+    "icon": "desktop-outline",
+    "name": "Desktop"
+  },
+  {
+    "icon": "phone-portrait-outline",
+    "name": "Mobile Phone"
+  },
+  {
+    "icon": "card-outline",
+    "name": "Card"
+  },
+  {
+    "icon": "bag-handle-outline",
+    "name": "Bag"
+  },
+  {
+    "icon": "game-controller-outline",
+    "name": "Game"
+  },
+  {
+    "icon": "construct-outline",
+    "name": "Tools"
+  },
+  {
+    "icon": "book-outline",
+    "name": "Book"
+  },
+  {
+    "icon": "library-outline",
+    "name": "Library"
+  },
+  {
+    "icon": "document-text-outline",
+    "name": "Document"
+  },
+  {
+    "icon": "pizza-outline",
+    "name": "Pizza"
+  },
+  {
+    "icon": "fast-food-outline",
+    "name": "Fast Food"
+  },
+  {
+    "icon": "beer-outline",
+    "name": "Beer"
+  },
+  {
+    "icon": "wine-outline",
+    "name": "Wine"
+  },
+  {
+    "icon": "shirt-outline",
+    "name": "Shirt"
+  },
+  {
+    "icon": "cash-outline",
+    "name": "Cash"
+  },
+  {
+    "icon": "watch-outline",
+    "name": "Watch"
+  },
+  {
+    "icon": "image-outline",
+    "name": "Pictures"
+  },
+  {
+    "icon": "barbell-outline",
+    "name": "Gym"
+  },
+  {
+    "icon": "bicycle-outline",
+    "name": "Bicycle"
+  },
+  {
+    "icon": "cart-outline",
+    "name": "Shopping"
+  },
+  {
+    "icon": "paw-outline",
+    "name": "Pet"
+  },
+  {
+    "icon": "school-outline",
+    "name": "School"
+  },
+  {
+    "icon": "ticket-outline",
+    "name": "Ticket"
+  }
+]

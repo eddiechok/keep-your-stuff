@@ -1,15 +1,33 @@
-import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { NgModule } from "@angular/core";
+import { PreloadAllModules, RouterModule, Routes } from "@angular/router";
 
 const routes: Routes = [
   {
-    path: '',
-    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
+    path: "category",
+    loadChildren: () =>
+      import("./module/category/category.module").then(m => m.CategoryModule)
+  },
+  {
+    path: "location",
+    loadChildren: () =>
+      import("./module/location/location.module").then(m => m.LocationModule)
+  },
+  {
+    path: "stuff",
+    loadChildren: () =>
+      import("./module/stuff/stuff.module").then(m => m.StuffModule)
+  },
+  {
+    path: "",
+    loadChildren: () => import("./tabs/tabs.module").then(m => m.TabsPageModule)
   }
 ];
 @NgModule({
   imports: [
-    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })
+    RouterModule.forRoot(routes, {
+      preloadingStrategy: PreloadAllModules,
+      relativeLinkResolution: "corrected"
+    })
   ],
   exports: [RouterModule]
 })
