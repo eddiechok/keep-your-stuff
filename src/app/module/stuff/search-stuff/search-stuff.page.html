@@ -2,13 +2,26 @@
   <ion-toolbar>
     <ion-title>Search Stuff</ion-title>
   </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar
+      [debounce]="500"
+      (ionChange)="onSearch($event)"
+    ></ion-searchbar>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <app-spinner *ngIf="isLoading"></app-spinner>
+  <app-skeleton-list *ngIf="isLoading"></app-skeleton-list>
+  <app-no-record
+    *ngIf="!isLoading && searchStuffs.length <= 0 && !!searchValue"
+  ></app-no-record>
+  <div class="search-helper" *ngIf="!isLoading && !searchValue">
+    <app-search-svg></app-search-svg>
+    <p>Enter your stuff name to search for it.</p>
+  </div>
   <ion-virtual-scroll
-    *ngIf="!isLoading"
-    [items]="stuffs"
+    *ngIf="!isLoading && searchStuffs.length > 0 && !!searchValue"
+    [items]="searchStuffs"
     [approxItemHeight]="'60px'"
   >
     <ion-item *virtualItem="let stuff">

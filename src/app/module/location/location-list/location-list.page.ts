@@ -1,13 +1,14 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
-import { LocationService } from "../location.service";
-import { Subscription } from "rxjs";
-import { Location } from "../location.model";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import {
-  ModalController,
   AlertController,
-  IonItemSliding
+  IonItemSliding,
+  LoadingController,
+  ModalController
 } from "@ionic/angular";
+import { Subscription } from "rxjs";
 import { AddLocationModalComponent } from "../add-location-modal/add-location-modal.component";
+import { Location } from "../location.model";
+import { LocationService } from "../location.service";
 
 @Component({
   selector: "app-location-list",
@@ -17,16 +18,20 @@ import { AddLocationModalComponent } from "../add-location-modal/add-location-mo
 export class LocationListPage implements OnInit, OnDestroy {
   private locationSub: Subscription;
   locations: Location[];
+  isLoading = false;
 
   constructor(
     private locationService: LocationService,
     private modalCtrl: ModalController,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private loadingCtrl: LoadingController
   ) {}
 
   ngOnInit() {
+    this.isLoading = true;
     this.locationSub = this.locationService.locations.subscribe(locations => {
       this.locations = locations;
+      this.isLoading = false;
     });
   }
 
@@ -59,7 +64,16 @@ export class LocationListPage implements OnInit, OnDestroy {
             text: "Delete",
             cssClass: "ion-text-danger",
             handler: () => {
-              this.locationService.deleteLocation(id).subscribe();
+              this.loadingCtrl
+                .create({
+                  message: "Deleting..."
+                })
+                .then(el => {
+                  el.present();
+                  this.locationService.deleteLocation(id).subscribe(() => {
+                    el.dismiss();
+                  });
+                });
             }
           }
         ]

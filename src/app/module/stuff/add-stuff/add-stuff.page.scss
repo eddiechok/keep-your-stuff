@@ -1,0 +1,15 @@
+.input-group {
+  display: flex;
+  align-items: stretch;
+  ion-item {
+    flex-grow: 1;
+    margin-right: 10px;
+    ion-label,
+    ion-input {
+      pointer-events: none;
+    }
+  }
+  ion-button {
+    height: auto;
+  }
+}

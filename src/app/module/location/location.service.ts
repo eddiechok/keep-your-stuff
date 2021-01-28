@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { Location } from "./location.model";
-import { map, take, tap } from "rxjs/operators";
+import { map, take, tap, delay } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root"
@@ -23,11 +23,12 @@ export class LocationService {
   constructor() {}
 
   get locations() {
-    return this._locations.asObservable();
+    return this._locations.pipe(delay(1000));
   }
 
   getLocation(id: number) {
     return this._locations.pipe(
+      delay(1000),
       map(locations => {
         return { ...locations.find(location => location.id === id) };
       })
@@ -37,6 +38,7 @@ export class LocationService {
   addLocation(category: Omit<Location, "id">) {
     return this._locations.pipe(
       take(1),
+      delay(1000),
       tap(locations => {
         const newLocation: Location = {
           id: locations.length + 1,
@@ -51,6 +53,7 @@ export class LocationService {
   updateLocation(id: number, data: Omit<Location, "id">) {
     return this._locations.pipe(
       take(1),
+      delay(1000),
       tap(locations => {
         const newCategories = [...locations];
         const updateLocationIndex = newCategories.findIndex(
@@ -69,6 +72,7 @@ export class LocationService {
   deleteLocation(id: number) {
     return this._locations.pipe(
       take(1),
+      delay(1000),
       tap(locations => {
         this._locations.next(locations.filter(category => category.id !== id));
       })

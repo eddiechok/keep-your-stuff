@@ -8,7 +8,13 @@
 </ion-header>
 
 <ion-content>
-  <ion-list>
+  <app-skeleton-list
+    *ngIf="isLoading"
+    [paragraph]="0"
+    [iconSize]="27"
+  ></app-skeleton-list>
+  <app-no-record *ngIf="!isLoading && categories.length <= 0"></app-no-record>
+  <ion-list *ngIf="!isLoading && categories.length > 0">
     <ion-item-sliding #slidingItem *ngFor="let category of categories">
       <ion-item>
         <ion-icon

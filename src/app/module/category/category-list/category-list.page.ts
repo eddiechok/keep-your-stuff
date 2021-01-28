@@ -1,13 +1,14 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
-import { CategoryService } from "../category.service";
-import { Subscription } from "rxjs";
-import { Category } from "../category.model";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import {
-  ModalController,
   AlertController,
-  IonItemSliding
+  IonItemSliding,
+  LoadingController,
+  ModalController
 } from "@ionic/angular";
+import { Subscription } from "rxjs";
 import { AddCategoryModalComponent } from "../add-category-modal/add-category-modal.component";
+import { Category } from "../category.model";
+import { CategoryService } from "../category.service";
 
 @Component({
   selector: "app-category-list",
@@ -17,16 +18,20 @@ import { AddCategoryModalComponent } from "../add-category-modal/add-category-mo
 export class CategoryListPage implements OnInit, OnDestroy {
   private categorySub: Subscription;
   categories: Category[];
+  isLoading = false;
 
   constructor(
     private categoryService: CategoryService,
     private modalCtrl: ModalController,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private loadingCtrl: LoadingController
   ) {}
 
   ngOnInit() {
+    this.isLoading = true;
     this.categorySub = this.categoryService.categories.subscribe(categories => {
       this.categories = categories;
+      this.isLoading = false;
     });
   }
 
@@ -59,7 +64,16 @@ export class CategoryListPage implements OnInit, OnDestroy {
             text: "Delete",
             cssClass: "ion-text-danger",
             handler: () => {
-              this.categoryService.deleteCategory(id).subscribe();
+              this.loadingCtrl
+                .create({
+                  message: "Deleting..."
+                })
+                .then(el => {
+                  el.present();
+                  this.categoryService.deleteCategory(id).subscribe(() => {
+                    el.dismiss();
+                  });
+                });
             }
           }
         ]

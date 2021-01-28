@@ -1,12 +1,12 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { NavController } from "@ionic/angular";
+import { Subscription } from "rxjs";
+import { map, switchMap } from "rxjs/operators";
 import { Category } from "../../category/category.model";
 import { CategoryService } from "../../category/category.service";
-import { Subscription } from "rxjs";
 import { Stuff } from "../../stuff/stuff.model";
 import { StuffService } from "../../stuff/stuff.service";
-import { map, switchMap } from "rxjs/operators";
 
 @Component({
   selector: "app-stuff-by-category",

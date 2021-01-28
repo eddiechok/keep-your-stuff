@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
-import { map, tap, take } from "rxjs/operators";
+import { delay, map, take, tap } from "rxjs/operators";
 import { Category } from "./category.model";
 
 @Injectable({
@@ -23,11 +23,12 @@ export class CategoryService {
   constructor() {}
 
   get categories() {
-    return this._categories.asObservable();
+    return this._categories.pipe(delay(1000));
   }
 
   getCategory(id: number) {
     return this._categories.pipe(
+      delay(1000),
       map(categories => {
         return { ...categories.find(category => category.id === id) };
       })
@@ -37,6 +38,7 @@ export class CategoryService {
   addCategory(category: Omit<Category, "id">) {
     return this._categories.pipe(
       take(1),
+      delay(1000),
       tap(categories => {
         const newCategory: Category = {
           id: categories.length + 1,
@@ -51,6 +53,7 @@ export class CategoryService {
   updateCategory(id: number, data: Omit<Category, "id">) {
     return this._categories.pipe(
       take(1),
+      delay(1000),
       tap(categories => {
         const newCategories = [...categories];
         const updateCategoryIndex = newCategories.findIndex(
@@ -69,6 +72,7 @@ export class CategoryService {
   deleteCategory(id: number) {
     return this._categories.pipe(
       take(1),
+      delay(1000),
       tap(categories => {
         this._categories.next(
           categories.filter(category => category.id !== id)

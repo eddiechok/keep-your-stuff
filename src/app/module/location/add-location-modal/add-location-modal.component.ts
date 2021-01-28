@@ -1,8 +1,8 @@
-import { Component, OnInit, Input } from "@angular/core";
-import { ModalController } from "@ionic/angular";
+import { Component, Input, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { ModalController } from "@ionic/angular";
+import { take } from "rxjs/operators";
 import { LocationService } from "../location.service";
-import { take, delay } from "rxjs/operators";
 
 @Component({
   selector: "app-add-location-modal",
@@ -40,7 +40,7 @@ export class AddLocationModalComponent implements OnInit {
       this.isLoading = true;
       this.locationService
         .getLocation(this.id)
-        .pipe(take(1), delay(1000))
+        .pipe(take(1))
         .subscribe(location => {
           this.form.setValue({
             name: location.name,

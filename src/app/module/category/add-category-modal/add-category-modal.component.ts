@@ -1,10 +1,9 @@
-import { Component, OnInit, ElementRef, Input } from "@angular/core";
-import { ModalController, IonItemSliding } from "@ionic/angular";
+import { Component, Input, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { CategoryService } from "../category.service";
+import { ModalController } from "@ionic/angular";
+import { take } from "rxjs/operators";
 import categoryIcon from "../category-icon.json";
-import { Category } from "../category.model";
-import { take, delay } from "rxjs/operators";
+import { CategoryService } from "../category.service";
 
 @Component({
   selector: "app-add-category-modal",
@@ -33,7 +32,7 @@ export class AddCategoryModalComponent implements OnInit {
       this.isLoading = true;
       this.categoryService
         .getCategory(this.id)
-        .pipe(take(1), delay(1000))
+        .pipe(take(1))
         .subscribe(category => {
           this.form.setValue({
             name: category.name,

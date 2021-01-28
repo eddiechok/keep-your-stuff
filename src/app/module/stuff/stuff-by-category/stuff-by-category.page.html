@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title> {{category.name}} </ion-title>
+    <ion-title> {{category?.name}} </ion-title>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
@@ -8,12 +8,22 @@
 </ion-header>
 
 <ion-content>
-  <ion-list *ngIf="!isLoading">
-    <ion-item *ngFor="let stuff of stuffs">
+  <app-skeleton-list *ngIf="isLoading"></app-skeleton-list>
+  <app-no-record *ngIf="!isLoading && stuffs.length <= 0"></app-no-record>
+  <ion-virtual-scroll
+    [items]="stuffs"
+    [approxItemHeight]="'60px'"
+    *ngIf="!isLoading && stuffs.length > 0"
+  >
+    <ion-item
+      *virtualItem="let stuff"
+      button
+      [routerLink]="['/stuff', stuff.id]"
+    >
       <ion-thumbnail slot="start">
         <ion-img [src]="stuff.imgUrl"></ion-img>
       </ion-thumbnail>
       <ion-label> {{stuff.name}} </ion-label>
     </ion-item>
-  </ion-list>
+  </ion-virtual-scroll>
 </ion-content>

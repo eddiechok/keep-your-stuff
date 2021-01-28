@@ -1,0 +1,17 @@
+<ion-list>
+  <ion-item *ngFor="let row of rows">
+    <ion-skeleton-text
+      animated
+      [style]="'width: ' + iconSize + 'px; height: ' + iconSize + 'px'"
+      slot="start"
+    ></ion-skeleton-text>
+    <ion-label>
+      <h3>
+        <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+      </h3>
+      <p *ngFor="let p of paragraphRows">
+        <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+      </p>
+    </ion-label>
+  </ion-item>
+</ion-list>

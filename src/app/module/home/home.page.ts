@@ -1,12 +1,12 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Subscription } from "rxjs";
+import { map, switchMap } from "rxjs/operators";
 import { Category } from "../category/category.model";
+import { CategoryService } from "../category/category.service";
 import { Location } from "../location/location.model";
+import { LocationService } from "../location/location.service";
 import { Stuff } from "../stuff/stuff.model";
 import { StuffService } from "../stuff/stuff.service";
-import { CategoryService } from "../category/category.service";
-import { LocationService } from "../location/location.service";
-import { switchMap, map, delay } from "rxjs/operators";
-import { Subscription } from "rxjs";
 
 type CategoryWithStuff = Category & {
   stuffs: number;
@@ -48,7 +48,6 @@ export class HomePage implements OnInit, OnDestroy {
       let _stuffs: Stuff[] = [];
       this.categorySub = this.stuffService.stuffs
         .pipe(
-          // delay(1000),
           switchMap(stuffs => {
             _stuffs = [...stuffs];
             return this.categoryService.categories;
@@ -75,7 +74,6 @@ export class HomePage implements OnInit, OnDestroy {
       let _stuffs: Stuff[] = [];
       this.locationSub = this.stuffService.stuffs
         .pipe(
-          // delay(1000),
           switchMap(stuffs => {
             _stuffs = [...stuffs];
             return this.locationService.locations;

@@ -12,9 +12,7 @@
     <ion-segment-button value="category"> Category </ion-segment-button>
     <ion-segment-button value="location"> Location </ion-segment-button>
   </ion-segment>
-  <div class="ion-padding ion-text-center" *ngIf="isLoading">
-    <ion-spinner color="primary"></ion-spinner>
-  </div>
+  <app-skeleton-list *ngIf="isLoading"></app-skeleton-list>
   <ion-list *ngIf="!isLoading && mode === 'category'">
     <ion-item
       *ngFor="let category of categories"
@@ -39,4 +37,9 @@
       </ion-label>
     </ion-item>
   </ion-list>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color="primary" [routerLink]="['/stuff', 'add']">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

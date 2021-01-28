@@ -1,10 +1,14 @@
 import { Injectable } from "@angular/core";
-import { Stuff } from "./stuff.model";
 import { BehaviorSubject } from "rxjs";
-import { take, map } from "rxjs/operators";
-import { Category } from "../category/category.model";
-import { Location } from "../location/location.model";
+import { delay, map, take, tap } from "rxjs/operators";
+import { Stuff } from "./stuff.model";
 
+function getImgSrc() {
+  const src = `https://dummyimage.com/600x400/${Math.round(
+    Math.random() * 99999
+  )}/fff.png`;
+  return src;
+}
 @Injectable({
   providedIn: "root"
 })
@@ -28,49 +32,46 @@ export class StuffService {
         name: "Pencil",
         categoryId: 1,
         locationId: 1,
-        imgUrl:
-          "https://upload.wikimedia.org/wikipedia/commons/0/08/Pencils_hb.jpg"
+        imgUrl: getImgSrc()
+        // "https://upload.wikimedia.org/wikipedia/commons/0/08/Pencils_hb.jpg"
       });
     }
     this._stuffs.next(stuffs);
   }
 
   get stuffs() {
-    return this._stuffs.asObservable();
+    return this._stuffs.pipe(delay(1000));
   }
 
-  // get stuffs() {
-  //   return this._stuffs.pipe(
-  //     map(oriStuffs => {
-  //       let stuffs: Stuff[] = [];
+  getStuff(id: number) {
+    return this._stuffs.pipe(
+      delay(1000),
+      map(stuffs => {
+        const stuff = stuffs.find(stuff => stuff.id === id);
+        if (stuff) {
+          return { ...stuff };
+        } else {
+          throw new Error("NO_RECORD_FOUND");
+        }
+      })
+    );
+  }
 
-  //       oriStuffs.forEach(stuff => {
-  //         let selectedCategory: Category;
-  //         let selectedLocation: Location;
+  addStuff(stuff: Omit<Stuff, "id">) {
+    return this._stuffs.pipe(
+      take(1),
+      map(stuffs => {
+        const id = stuffs.length + 1;
 
-  //         this.categoryService
-  //           .getCategory(stuff.categoryId)
-  //           .pipe(take(1))
-  //           .subscribe(category => {
-  //             selectedCategory = category;
-  //           });
+        this._stuffs.next(
+          stuffs.concat({
+            id: id,
+            ...stuff
+          })
+        );
 
-  //         this.locationService
-  //           .getLocation(stuff.locationId)
-  //           .pipe(take(1))
-  //           .subscribe(location => {
-  //             selectedLocation = location;
-  //           });
-
-  //         stuffs.push({
-  //           ...stuff,
-  //           category: selectedCategory,
-  //           location: selectedLocation
-  //         });
-  //       });
-
-  //       return stuffs;
-  //     })
-  //   );
-  // }
+        return id;
+      })
+    );
+  }
 }
