@@ -1,12 +1,17 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { NavController } from "@ionic/angular";
-import { Subscription } from "rxjs";
-import { switchMap } from "rxjs/operators";
-import { Category } from "../../category/category.model";
+import { zip } from "rxjs";
+import {
+  switchMap,
+  distinctUntilChanged,
+  map,
+  throwIfEmpty,
+  tap
+} from "rxjs/operators";
 import { CategoryService } from "../../category/category.service";
 import { LocationService } from "../../location/location.service";
-import { Stuff, StuffWithRelations } from "../stuff.model";
+import { StuffWithRelations } from "../stuff.model";
 import { StuffService } from "../stuff.service";
 
 @Component({
@@ -14,10 +19,9 @@ import { StuffService } from "../stuff.service";
   templateUrl: "./stuff-detail.page.html",
   styleUrls: ["./stuff-detail.page.scss"]
 })
-export class StuffDetailPage implements OnInit, OnDestroy {
+export class StuffDetailPage implements OnInit {
   stuff: StuffWithRelations;
   isLoading = false;
-  private stuffSub: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -28,50 +32,52 @@ export class StuffDetailPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.route.paramMap.subscribe(paramMap => {
-      if (!paramMap.has("id")) {
-        this.navCtrl.back();
-        return;
-      }
-
-      this.isLoading = true;
-
-      const id = +paramMap.get("id");
-      let selectedStuff: Stuff;
-      let selectedCategory: Category;
-
-      this.stuffSub = this.stuffService
-        .getStuff(id)
-        .pipe(
-          switchMap(stuff => {
-            selectedStuff = stuff;
-            console.log("stuff");
-            return this.categoryService.getCategory(stuff.categoryId);
-          }),
-          switchMap(category => {
-            console.log("category");
-            selectedCategory = category;
-            return this.locationService.getLocation(selectedStuff.locationId);
-          })
-        )
-        .subscribe(
-          location => {
-            console.log("location");
-            this.stuff = {
-              ...selectedStuff,
-              category: selectedCategory,
-              location
-            };
-            this.isLoading = false;
-          },
-          error => {
-            this.isLoading = false;
+    this.route.paramMap
+      .pipe(
+        map(paramMap => {
+          if (!paramMap.has("id")) {
+            this.navCtrl.back();
+            return;
           }
-        );
-    });
-  }
 
-  ngOnDestroy() {
-    if (this.stuffSub) this.stuffSub.unsubscribe();
+          console.log("paramMap");
+          return +paramMap.get("id");
+        }),
+        throwIfEmpty(),
+        distinctUntilChanged(),
+        tap(() => {
+          this.isLoading = true;
+        }),
+        switchMap(id => {
+          return this.stuffService.getStuff(id).pipe(
+            switchMap(stuff => {
+              console.log("stuff");
+              return zip(
+                this.categoryService.getCategory(stuff.categoryId),
+                this.locationService.getLocation(stuff.locationId)
+              ).pipe(
+                map(data => {
+                  console.log("location & category");
+                  const newStuff: StuffWithRelations = {
+                    ...stuff,
+                    category: data[0],
+                    location: data[1]
+                  };
+                  return newStuff;
+                })
+              );
+            })
+          );
+        })
+      )
+      .subscribe(
+        stuff => {
+          this.stuff = stuff;
+          this.isLoading = false;
+        },
+        error => {
+          this.isLoading = false;
+        }
+      );
   }
 }

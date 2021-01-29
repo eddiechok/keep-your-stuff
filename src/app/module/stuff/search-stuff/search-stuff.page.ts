@@ -1,16 +1,15 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { Subscription, Observable, Subject } from "rxjs";
+import { Subject, Subscription, zip } from "rxjs";
 import {
+  distinctUntilChanged,
+  filter,
   map,
   switchMap,
-  distinctUntilChanged,
   takeUntil,
   tap,
-  filter
+  debounceTime
 } from "rxjs/operators";
-import { Category } from "../../category/category.model";
 import { CategoryService } from "../../category/category.service";
-import { Location } from "../../location/location.model";
 import { LocationService } from "../../location/location.service";
 import { StuffWithRelations } from "../stuff.model";
 import { StuffService } from "../stuff.service";
@@ -23,7 +22,7 @@ import { StuffService } from "../stuff.service";
 export class SearchStuffPage implements OnInit, OnDestroy {
   private searchSub: Subscription;
   private search$ = new Subject<string>();
-  private stopSearch$ = new Subject();
+  private stopSearch$ = new Subject<string>();
   searchStuffs: StuffWithRelations[] = [];
   isLoading = false;
   searchValue = "";
@@ -35,37 +34,36 @@ export class SearchStuffPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    let _locations: Location[] = [];
-    let _categories: Category[] = [];
-
-    const stopSearchObs$ = this.stopSearch$.pipe(
-      tap(() => {
-        this.isLoading = false;
-      })
-    );
-
     this.searchSub = this.search$
       .pipe(
-        filter(value => !!value), // filter empty value
-        distinctUntilChanged(),
+        debounceTime(500),
+        tap(value => {
+          this.searchValue = value;
+        }),
+        filter(value => {
+          return !!value;
+        }), // filter empty value
         switchMap(() => {
           this.isLoading = true;
-          return this.categoryService.categories.pipe(
-            takeUntil(stopSearchObs$)
+          return zip(
+            this.categoryService.categories,
+            this.locationService.locations,
+            this.stuffService.stuffs
+          ).pipe(
+            takeUntil(
+              this.stopSearch$.pipe(
+                tap(() => {
+                  this.isLoading = false;
+                })
+              )
+            )
           );
         }),
-        switchMap(categories => {
-          console.log("categories");
-          _categories = [...categories];
-          return this.locationService.locations.pipe(takeUntil(stopSearchObs$));
-        }),
-        switchMap(locations => {
-          console.log("locations");
-          _locations = [...locations];
-          return this.stuffService.stuffs.pipe(takeUntil(stopSearchObs$));
-        }),
-        map(stuffs => {
-          console.log("stuffs");
+        map(data => {
+          console.log("stuffs, locations, categories");
+          const categories = data[0];
+          const locations = data[1];
+          const stuffs = data[2];
           let newStuffs: StuffWithRelations[] = [];
 
           // filter stuffs with keyword
@@ -77,10 +75,10 @@ export class SearchStuffPage implements OnInit, OnDestroy {
             )
             .forEach(stuff => {
               // get category and location details
-              const selectedCategory = _categories.find(
+              const selectedCategory = categories.find(
                 category => category.id === stuff.categoryId
               );
-              const selectedLocation = _locations.find(
+              const selectedLocation = locations.find(
                 location => location.id === stuff.locationId
               );
 
@@ -102,10 +100,9 @@ export class SearchStuffPage implements OnInit, OnDestroy {
 
   onSearch(event) {
     const value = event.target.value as string;
-    this.searchValue = value;
 
     // stop ongoing subscription
-    this.stopSearch$.next();
+    this.stopSearch$.next(value);
 
     // emit new search value
     this.search$.next(value);

@@ -74,4 +74,23 @@ export class StuffService {
       })
     );
   }
+
+  updateStuff(editedStuff: Stuff) {
+    return this._stuffs.pipe(
+      delay(1000),
+      take(1),
+      map(stuffs => {
+        const updatedStuffs = [...stuffs];
+        const updatedIndex = updatedStuffs.findIndex(
+          stuff => stuff.id === editedStuff.id
+        );
+        updatedStuffs[updatedIndex] = {
+          ...updatedStuffs[updatedIndex],
+          ...editedStuff
+        };
+        this._stuffs.next(updatedStuffs);
+        return;
+      })
+    );
+  }
 }

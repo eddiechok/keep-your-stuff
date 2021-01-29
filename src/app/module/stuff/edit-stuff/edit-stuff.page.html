@@ -1,0 +1,65 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button [defaultHref]="'/stuff/'+stuffId"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Edit Stuff</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="onSubmit()">
+        <ion-icon name="checkmark-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <app-spinner *ngIf="isLoading"></app-spinner>
+  <form [formGroup]="form" *ngIf="!isLoading">
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <ion-item>
+            <ion-label position="floating">Name</ion-label>
+            <ion-input formControlName="name"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <ion-item>
+            <ion-label position="floating">Description</ion-label>
+            <ion-input formControlName="desc"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <div class="input-group">
+            <ion-item (click)="onSelectCategory()">
+              <ion-label position="floating"> Category </ion-label>
+              <ion-input type="hidden" formControlName="category"></ion-input>
+              <ion-input [value]="selected.category" readonly></ion-input>
+            </ion-item>
+            <ion-button (click)="onSelectCategory()">
+              <ion-icon name="list-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <div class="input-group">
+            <ion-item (click)="onSelectLocation()">
+              <ion-label position="floating"> Location </ion-label>
+              <ion-input type="hidden" formControlName="location"></ion-input>
+              <ion-input [value]="selected.location" readonly></ion-input>
+            </ion-item>
+            <ion-button (click)="onSelectLocation()">
+              <ion-icon name="location-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>
