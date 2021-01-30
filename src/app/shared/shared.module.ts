@@ -8,6 +8,7 @@ import { SearchSvgComponent } from "./components/search-svg/search-svg.component
 import { ImageInputComponent } from "./components/image-input/image-input.component";
 import { SvgModule } from "./svg/svg.module";
 import { ImageViewerComponent } from "./components/image-viewer/image-viewer.component";
+import { DefaultImageDirective } from "./directives/default-image.directive";
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { ImageViewerComponent } from "./components/image-viewer/image-viewer.com
     NoRecordComponent,
     SearchSvgComponent,
     ImageInputComponent,
-    ImageViewerComponent
+    ImageViewerComponent,
+    DefaultImageDirective
   ],
   imports: [CommonModule, IonicModule, SvgModule],
   exports: [
@@ -25,7 +27,8 @@ import { ImageViewerComponent } from "./components/image-viewer/image-viewer.com
     NoRecordComponent,
     SearchSvgComponent,
     ImageInputComponent,
-    ImageViewerComponent
+    ImageViewerComponent,
+    DefaultImageDirective
   ]
 })
 export class SharedModule {}
