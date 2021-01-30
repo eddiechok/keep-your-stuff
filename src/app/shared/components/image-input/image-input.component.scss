@@ -1,0 +1,31 @@
+.upload-container {
+  position: relative;
+  padding-top: 50%;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.upload {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: var(--ion-color-step-50);
+  padding: 16px;
+  color: var(--ion-color-step-500);
+}
+
+app-add-image-svg {
+  width: 50px;
+  display: block;
+}
+
+input[type="file"] {
+  display: none;
+}

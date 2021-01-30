@@ -9,7 +9,6 @@ import {
 } from "@ionic/angular";
 import { PickerColumnOption } from "@ionic/core";
 import { Subscription, zip } from "rxjs";
-import { switchMap } from "rxjs/operators";
 import { AddCategoryModalComponent } from "../../category/add-category-modal/add-category-modal.component";
 import { Category } from "../../category/category.model";
 import { CategoryService } from "../../category/category.service";
@@ -116,6 +115,12 @@ export class AddStuffPage implements OnInit, OnDestroy {
 
   onSelectLocation() {
     this.openPicker("location", this.locations);
+  }
+
+  onFileSelected(imagePath) {
+    this.form.patchValue({
+      imgUrl: imagePath
+    });
   }
 
   onSubmit() {

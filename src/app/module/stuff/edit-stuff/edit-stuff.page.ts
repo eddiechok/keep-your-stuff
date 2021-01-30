@@ -96,6 +96,7 @@ export class EditStuffPage implements OnInit, OnDestroy {
       },
       err => {
         console.log(err);
+        this.navCtrl.navigateBack("/home");
         this.isLoading = false;
       }
     );
@@ -154,6 +155,12 @@ export class EditStuffPage implements OnInit, OnDestroy {
 
   onSelectLocation() {
     this.openPicker("location", this.locations);
+  }
+
+  onFileSelected(imagePath) {
+    this.form.patchValue({
+      imgUrl: imagePath
+    });
   }
 
   onSubmit() {

@@ -15,10 +15,10 @@ const routes: Routes = [
     pathMatch: "full"
   },
   {
-    path: "by-category/:id",
+    path: "by/:type/:id",
     loadChildren: () =>
-      import("./stuff-by-category/stuff-by-category.module").then(
-        m => m.StuffByCategoryPageModule
+      import("./stuff-by-type/stuff-by-type.module").then(
+        m => m.StuffByTypePageModule
       )
   },
   {

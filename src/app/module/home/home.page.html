@@ -16,7 +16,7 @@
   <ion-list *ngIf="!isLoading && mode === 'category'">
     <ion-item
       *ngFor="let category of categories"
-      [routerLink]="['/stuff', 'by-category', category.id]"
+      [routerLink]="['/stuff', 'by', 'category', category.id]"
       button
     >
       <ion-icon slot="start" [name]="category.icon" [color]="'primary'">
@@ -28,7 +28,10 @@
     </ion-item>
   </ion-list>
   <ion-list *ngIf="!isLoading && mode === 'location'">
-    <ion-item *ngFor="let location of locations">
+    <ion-item
+      *ngFor="let location of locations"
+      [routerLink]="['/stuff', 'by', 'location', location.id]"
+    >
       <ion-icon slot="start" name="location" [color]="location.color">
       </ion-icon>
       <ion-label>

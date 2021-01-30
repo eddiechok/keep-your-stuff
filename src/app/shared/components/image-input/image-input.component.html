@@ -1,0 +1,10 @@
+<div
+  class="upload-container"
+  [style.background-image]="'url(' + selectedImage + ')'"
+  (click)="onClick()"
+>
+  <div class="upload" *ngIf="!selectedImage">
+    <app-add-image-svg></app-add-image-svg>
+    <ion-label> Click to add photos </ion-label>
+  </div>
+</div>
