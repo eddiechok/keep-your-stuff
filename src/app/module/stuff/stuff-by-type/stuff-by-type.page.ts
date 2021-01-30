@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { NavController } from "@ionic/angular";
-import { Observable, Subscription, zip } from "rxjs";
+import { Observable, Subscription, combineLatest } from "rxjs";
 import { map } from "rxjs/operators";
 import { CategoryService } from "../../category/category.service";
 import { LocationService } from "../../location/location.service";
@@ -45,7 +45,7 @@ export class StuffByTypePage implements OnInit, OnDestroy {
         this.navCtrl.back();
       }
 
-      this.sub = zip(obs$, this.stuffService.stuffs)
+      this.sub = combineLatest(obs$, this.stuffService.stuffs)
         .pipe(
           map(data => {
             data[1] = data[1].filter(stuff => {

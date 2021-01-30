@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { Subject, Subscription, zip } from "rxjs";
+import { Subject, Subscription, combineLatest } from "rxjs";
 import {
-  distinctUntilChanged,
   filter,
   map,
   switchMap,
@@ -45,7 +44,7 @@ export class SearchStuffPage implements OnInit, OnDestroy {
         }), // filter empty value
         switchMap(() => {
           this.isLoading = true;
-          return zip(
+          return combineLatest(
             this.categoryService.categories,
             this.locationService.locations,
             this.stuffService.stuffs
@@ -59,11 +58,8 @@ export class SearchStuffPage implements OnInit, OnDestroy {
             )
           );
         }),
-        map(data => {
+        map(([categories, locations, stuffs]) => {
           console.log("stuffs, locations, categories");
-          const categories = data[0];
-          const locations = data[1];
-          const stuffs = data[2];
           let newStuffs: StuffWithRelations[] = [];
 
           // filter stuffs with keyword

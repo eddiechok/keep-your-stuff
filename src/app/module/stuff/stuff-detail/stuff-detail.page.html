@@ -15,34 +15,31 @@
 <ion-content>
   <app-spinner *ngIf="isLoading"></app-spinner>
   <app-no-record *ngIf="!isLoading && !stuff"></app-no-record>
-  <ion-grid *ngIf="!isLoading && stuff">
-    <ion-row>
-      <ion-col>
-        <app-image-viewer [imagePath]="stuff.imgUrl"></app-image-viewer>
-        <!-- <ion-img [src]="stuff.imgUrl" *ngIf="stuff.imgUrl"></ion-img> -->
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col>
-        <ion-label>
-          <p>Category</p>
-          <h2>{{stuff.category.name}}</h2>
-        </ion-label>
-      </ion-col>
-      <ion-col>
-        <ion-label>
-          <p>Location</p>
-          <h2>{{stuff.location.name}}</h2>
-        </ion-label>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col>
-        <ion-label>
-          <p>Description</p>
-          <h2>{{stuff.desc || "-"}}</h2>
-        </ion-label>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+  <div *ngIf="!isLoading && stuff">
+    <app-image-viewer [imagePath]="stuff.imgUrl"></app-image-viewer>
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <ion-label>
+            <p>Category</p>
+            <h2>{{stuff.category.name}}</h2>
+          </ion-label>
+        </ion-col>
+        <ion-col>
+          <ion-label>
+            <p>Location</p>
+            <h2>{{stuff.location.name}}</h2>
+          </ion-label>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <ion-label>
+            <p>Description</p>
+            <h2>{{stuff.desc || "-"}}</h2>
+          </ion-label>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
 </ion-content>

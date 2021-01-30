@@ -8,7 +8,7 @@ import {
   PickerController
 } from "@ionic/angular";
 import { PickerColumnOption } from "@ionic/core";
-import { Subscription, zip } from "rxjs";
+import { Subscription, zip, combineLatest } from "rxjs";
 import { map, switchMap } from "rxjs/operators";
 import { AddCategoryModalComponent } from "../../category/add-category-modal/add-category-modal.component";
 import { Category } from "../../category/category.model";
@@ -70,15 +70,14 @@ export class EditStuffPage implements OnInit, OnDestroy {
       })
     );
 
-    const sub = zip(
+    this.sub = combineLatest(
       this.categoryService.categories,
       this.locationService.locations,
       stuffObs$
     ).subscribe(
-      data => {
-        this.categories = [...data[0]];
-        this.locations = [...data[1]];
-        const stuff = data[2];
+      ([categories, locations, stuff]) => {
+        this.categories = [...categories];
+        this.locations = [...locations];
         this.form.patchValue({
           name: stuff.name,
           desc: stuff.desc,

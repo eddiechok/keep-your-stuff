@@ -1,13 +1,12 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { NavController } from "@ionic/angular";
-import { zip } from "rxjs";
+import { combineLatest, Subscription } from "rxjs";
 import {
   switchMap,
   distinctUntilChanged,
   map,
-  throwIfEmpty,
-  tap
+  throwIfEmpty
 } from "rxjs/operators";
 import { CategoryService } from "../../category/category.service";
 import { LocationService } from "../../location/location.service";
@@ -19,9 +18,10 @@ import { StuffService } from "../stuff.service";
   templateUrl: "./stuff-detail.page.html",
   styleUrls: ["./stuff-detail.page.scss"]
 })
-export class StuffDetailPage implements OnInit {
+export class StuffDetailPage implements OnInit, OnDestroy {
   stuff: StuffWithRelations;
   isLoading = false;
+  private sub: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -39,45 +39,47 @@ export class StuffDetailPage implements OnInit {
             this.navCtrl.back();
             return;
           }
-
-          console.log("paramMap");
           return +paramMap.get("id");
         }),
         throwIfEmpty(),
-        distinctUntilChanged(),
-        tap(() => {
-          this.isLoading = true;
-        }),
-        switchMap(id => {
-          return this.stuffService.getStuff(id).pipe(
+        distinctUntilChanged()
+      )
+      .subscribe(id => {
+        this.isLoading = true;
+        this.sub = this.stuffService
+          .getStuff(id)
+          .pipe(
             switchMap(stuff => {
               console.log("stuff");
-              return zip(
+              return combineLatest(
                 this.categoryService.getCategory(stuff.categoryId),
                 this.locationService.getLocation(stuff.locationId)
               ).pipe(
-                map(data => {
-                  console.log("location & category");
+                map(([category, location]) => {
+                  console.log("stuff detail: category and location");
                   const newStuff: StuffWithRelations = {
                     ...stuff,
-                    category: data[0],
-                    location: data[1]
+                    category: category,
+                    location: location
                   };
                   return newStuff;
                 })
               );
             })
+          )
+          .subscribe(
+            stuff => {
+              this.stuff = stuff;
+              this.isLoading = false;
+            },
+            error => {
+              this.isLoading = false;
+            }
           );
-        })
-      )
-      .subscribe(
-        stuff => {
-          this.stuff = stuff;
-          this.isLoading = false;
-        },
-        error => {
-          this.isLoading = false;
-        }
-      );
+      });
+  }
+
+  ngOnDestroy() {
+    if (this.sub) this.sub.unsubscribe();
   }
 }

@@ -8,7 +8,7 @@ import {
   PickerController
 } from "@ionic/angular";
 import { PickerColumnOption } from "@ionic/core";
-import { Subscription, zip } from "rxjs";
+import { Subscription, combineLatest } from "rxjs";
 import { AddCategoryModalComponent } from "../../category/add-category-modal/add-category-modal.component";
 import { Category } from "../../category/category.model";
 import { CategoryService } from "../../category/category.service";
@@ -52,12 +52,12 @@ export class AddStuffPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.sub = zip(
+    this.sub = combineLatest(
       this.categoryService.categories,
       this.locationService.locations
-    ).subscribe(data => {
-      this.categories = [...data[0]];
-      this.locations = [...data[1]];
+    ).subscribe(([categories, locations]) => {
+      this.categories = [...categories];
+      this.locations = [...locations];
       this.isLoading = false;
     });
   }
