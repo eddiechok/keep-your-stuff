@@ -8,7 +8,7 @@ import {
   PickerController
 } from "@ionic/angular";
 import { PickerColumnOption } from "@ionic/core";
-import { Subscription } from "rxjs";
+import { Subscription, zip } from "rxjs";
 import { switchMap } from "rxjs/operators";
 import { AddCategoryModalComponent } from "../../category/add-category-modal/add-category-modal.component";
 import { Category } from "../../category/category.model";
@@ -53,17 +53,14 @@ export class AddStuffPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.sub = this.categoryService.categories
-      .pipe(
-        switchMap(categories => {
-          this.categories = [...categories];
-          return this.locationService.locations;
-        })
-      )
-      .subscribe(locations => {
-        this.locations = [...locations];
-        this.isLoading = false;
-      });
+    this.sub = zip(
+      this.categoryService.categories,
+      this.locationService.locations
+    ).subscribe(data => {
+      this.categories = [...data[0]];
+      this.locations = [...data[1]];
+      this.isLoading = false;
+    });
   }
 
   async openPicker(name: string, data: { id: number; name: string }[]) {

@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { NavController } from "@ionic/angular";
-import { Subscription } from "rxjs";
-import { map, switchMap } from "rxjs/operators";
+import { Subscription, zip } from "rxjs";
+import { map } from "rxjs/operators";
 import { Category } from "../../category/category.model";
 import { CategoryService } from "../../category/category.service";
 import { Stuff } from "../../stuff/stuff.model";
@@ -17,7 +17,7 @@ export class StuffByCategoryPage implements OnInit, OnDestroy {
   category: Category;
   stuffs: Stuff[];
   isLoading = false;
-  private categorySub: Subscription;
+  private sub: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -33,23 +33,25 @@ export class StuffByCategoryPage implements OnInit, OnDestroy {
       }
       this.isLoading = true;
       const id = +paramMap.get("id");
-      this.categorySub = this.categoryService
-        .getCategory(id)
+      this.sub = zip(
+        this.categoryService.getCategory(id),
+        this.stuffService.stuffs
+      )
         .pipe(
-          switchMap(category => {
-            this.category = category;
-            return this.stuffService.stuffs;
-          }),
-          map(stuffs => stuffs.filter(stuff => stuff.categoryId === id))
+          map(data => {
+            data[1] = data[1].filter(stuff => stuff.categoryId === id);
+            return data;
+          })
         )
-        .subscribe(stuffs => {
-          this.stuffs = stuffs;
+        .subscribe(data => {
+          this.category = data[0];
+          this.stuffs = data[1];
           this.isLoading = false;
         });
     });
   }
 
   ngOnDestroy() {
-    if (this.categorySub) this.categorySub.unsubscribe();
+    if (this.sub) this.sub.unsubscribe();
   }
 }
