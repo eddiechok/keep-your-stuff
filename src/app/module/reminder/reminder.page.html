@@ -1,0 +1,43 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/setting"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Expiration Reminder</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item>
+      <ion-icon
+        color="primary"
+        slot="start"
+        name="notifications-outline"
+      ></ion-icon>
+      <ion-label> Show reminder </ion-label>
+      <ion-toggle
+        slot="end"
+        color="primary"
+        [(ngModel)]="reminder.show"
+        (ngModelChange)="onToggleReminder()"
+      ></ion-toggle>
+    </ion-item>
+    <ion-item button (click)="onOpenDayPicker()">
+      <ion-icon color="primary" slot="start" name="calendar-outline"></ion-icon>
+      <ion-label> Day of reminder </ion-label>
+      <ion-note slot="end"> {{reminder.daysBefore + ' days before'}} </ion-note>
+    </ion-item>
+    <ion-item button (click)="datetime.open()">
+      <ion-icon color="primary" slot="start" name="alarm-outline"></ion-icon>
+      <ion-label> Time of reminder </ion-label>
+      <ion-note slot="end"> {{reminder.time | date:"h:mm aaa" }} </ion-note>
+      <ion-datetime
+        #datetime
+        [(ngModel)]="reminder.time"
+        (ngModelChange)="onTimeChange()"
+        displayFormat="h:mm A"
+      ></ion-datetime>
+    </ion-item>
+  </ion-list>
+</ion-content>

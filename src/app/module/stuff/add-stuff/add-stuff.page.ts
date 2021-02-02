@@ -16,6 +16,7 @@ import { AddLocationModalComponent } from "../../location/add-location-modal/add
 import { Location } from "../../location/location.model";
 import { LocationService } from "../../location/location.service";
 import { StuffService } from "../stuff.service";
+import { NotificationService } from "src/app/shared/services/notification.service";
 
 @Component({
   selector: "app-add-stuff",
@@ -28,13 +29,16 @@ export class AddStuffPage implements OnInit, OnDestroy {
     desc: [null],
     imgUrl: [null],
     category: [null, Validators.required],
-    location: [null, Validators.required]
+    location: [null, Validators.required],
+    expiryDate: [null]
   });
   isLoading = false;
+  defaultTime = new Date(new Date().setHours(9, 0)).toISOString();
   selected = {
     category: "",
     location: ""
   };
+
   private categories: Category[] = [];
   private locations: Location[] = [];
   private sub: Subscription;
@@ -48,7 +52,8 @@ export class AddStuffPage implements OnInit, OnDestroy {
     private modalCtrl: ModalController,
     private loadingCtrl: LoadingController,
     private alertCtrl: AlertController,
-    private router: Router
+    private router: Router,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit() {
@@ -62,7 +67,11 @@ export class AddStuffPage implements OnInit, OnDestroy {
     });
   }
 
-  async openPicker(name: string, data: { id: number; name: string }[]) {
+  async openPicker(
+    name: string,
+    data: { id: number; name: string }[],
+    selectedIndex?: number
+  ) {
     const options: PickerColumnOption[] = [];
 
     data.forEach(item => {
@@ -106,15 +115,32 @@ export class AddStuffPage implements OnInit, OnDestroy {
       ]
     });
 
+    if (selectedIndex !== undefined) {
+      picker.columns[0].selectedIndex = selectedIndex;
+    }
     await picker.present();
   }
 
   onSelectCategory() {
-    this.openPicker("category", this.categories);
+    const categoryId = this.form.get("category").value;
+    let selectedCateogryIndex: number;
+    if (categoryId) {
+      selectedCateogryIndex = this.categories.findIndex(
+        category => category.id === categoryId
+      );
+    }
+    this.openPicker("category", this.categories, selectedCateogryIndex);
   }
 
   onSelectLocation() {
-    this.openPicker("location", this.locations);
+    const locationId = this.form.get("location").value;
+    let selectedLocationIndex: number;
+    if (locationId) {
+      selectedLocationIndex = this.categories.findIndex(
+        location => location.id === locationId
+      );
+    }
+    this.openPicker("location", this.locations, selectedLocationIndex);
   }
 
   onFileSelected(imagePath) {
@@ -177,8 +203,22 @@ export class AddStuffPage implements OnInit, OnDestroy {
               .then(alertEl => {
                 alertEl.present();
               });
+
+            // schedule notifications
+            if (this.form.value.expiryDate) {
+              this.notificationService.rescheduleNotification({
+                ...this.form.value,
+                categoryId: this.form.value.category,
+                locationId: this.form.value.location,
+                id: newId
+              });
+            }
           });
       });
+  }
+
+  canDeactivate() {
+    return !this.form.dirty;
   }
 
   ngOnDestroy() {

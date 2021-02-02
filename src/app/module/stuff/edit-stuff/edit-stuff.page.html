@@ -41,6 +41,20 @@
       </ion-row>
       <ion-row>
         <ion-col>
+          <app-datetime-wrapper>
+            <ion-item>
+              <ion-label position="floating">Expiry Date</ion-label>
+              <ion-datetime
+                formControlName="expiryDate"
+                min="1970"
+                max="2200"
+              ></ion-datetime>
+            </ion-item>
+          </app-datetime-wrapper>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
           <div class="input-group">
             <ion-item (click)="onSelectCategory()">
               <ion-label position="floating"> Category </ion-label>

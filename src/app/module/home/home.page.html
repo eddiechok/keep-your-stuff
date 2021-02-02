@@ -2,16 +2,18 @@
   <ion-toolbar>
     <ion-title>Keep My Stuff</ion-title>
   </ion-toolbar>
+  <ion-toolbar>
+    <ion-segment
+      [value]="mode"
+      (ionChange)="onSegmentChange($event.detail.value)"
+    >
+      <ion-segment-button value="category"> Category </ion-segment-button>
+      <ion-segment-button value="location"> Location </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-segment
-    [value]="mode"
-    (ionChange)="onSegmentChange($event.detail.value)"
-  >
-    <ion-segment-button value="category"> Category </ion-segment-button>
-    <ion-segment-button value="location"> Location </ion-segment-button>
-  </ion-segment>
   <app-skeleton-list *ngIf="isLoading"></app-skeleton-list>
   <ion-list *ngIf="!isLoading && mode === 'category'">
     <ion-item

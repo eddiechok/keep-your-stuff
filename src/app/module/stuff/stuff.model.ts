@@ -8,6 +8,7 @@ export type Stuff = {
   locationId: number;
   imgUrl?: string;
   desc?: string;
+  expiryDate?: string;
 };
 
 export type StuffWithRelations = {
@@ -17,4 +18,5 @@ export type StuffWithRelations = {
   location: Location;
   imgUrl?: string;
   desc?: string;
+  expiryDate?: string;
 };

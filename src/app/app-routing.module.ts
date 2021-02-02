@@ -20,6 +20,10 @@ const routes: Routes = [
   {
     path: "",
     loadChildren: () => import("./tabs/tabs.module").then(m => m.TabsPageModule)
+  },
+  {
+    path: 'reminder',
+    loadChildren: () => import('./module/reminder/reminder.module').then( m => m.ReminderPageModule)
   }
 ];
 @NgModule({

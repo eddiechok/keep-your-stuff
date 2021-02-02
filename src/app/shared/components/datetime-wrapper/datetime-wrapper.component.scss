@@ -1,0 +1,13 @@
+.input-group {
+  display: flex;
+  align-items: stretch;
+  ::ng-deep {
+    & > ion-item {
+      flex-grow: 1;
+    }
+  }
+  ion-button {
+    margin-left: 10px;
+    height: auto;
+  }
+}

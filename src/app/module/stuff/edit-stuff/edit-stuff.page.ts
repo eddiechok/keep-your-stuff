@@ -17,6 +17,8 @@ import { AddLocationModalComponent } from "../../location/add-location-modal/add
 import { Location } from "../../location/location.model";
 import { LocationService } from "../../location/location.service";
 import { StuffService } from "../stuff.service";
+import { NotificationService } from "src/app/shared/services/notification.service";
+import { Stuff } from "../stuff.model";
 
 @Component({
   selector: "app-edit-stuff",
@@ -29,7 +31,8 @@ export class EditStuffPage implements OnInit, OnDestroy {
     desc: [null],
     imgUrl: [null],
     category: [null, Validators.required],
-    location: [null, Validators.required]
+    location: [null, Validators.required],
+    expiryDate: [null]
   });
   isLoading = false;
   selected = {
@@ -37,6 +40,7 @@ export class EditStuffPage implements OnInit, OnDestroy {
     location: ""
   };
   stuffId: number;
+  private editingStuff: Stuff;
   private categories: Category[] = [];
   private locations: Location[] = [];
   private sub: Subscription;
@@ -50,7 +54,8 @@ export class EditStuffPage implements OnInit, OnDestroy {
     private modalCtrl: ModalController,
     private loadingCtrl: LoadingController,
     private route: ActivatedRoute,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit() {
@@ -76,6 +81,7 @@ export class EditStuffPage implements OnInit, OnDestroy {
       stuffObs$
     ).subscribe(
       ([categories, locations, stuff]) => {
+        this.editingStuff = { ...stuff };
         this.categories = [...categories];
         this.locations = [...locations];
         this.form.patchValue({
@@ -83,7 +89,8 @@ export class EditStuffPage implements OnInit, OnDestroy {
           desc: stuff.desc,
           imgUrl: stuff.imgUrl,
           category: stuff.categoryId,
-          location: stuff.locationId
+          location: stuff.locationId,
+          expiryDate: stuff.expiryDate
         });
         this.selected.category = this.categories.find(
           category => category.id === stuff.categoryId
@@ -101,7 +108,11 @@ export class EditStuffPage implements OnInit, OnDestroy {
     );
   }
 
-  async openPicker(name: string, data: { id: number; name: string }[]) {
+  async openPicker(
+    name: string,
+    data: { id: number; name: string }[],
+    selectedIndex?: number
+  ) {
     const options: PickerColumnOption[] = [];
 
     data.forEach(item => {
@@ -145,15 +156,32 @@ export class EditStuffPage implements OnInit, OnDestroy {
       ]
     });
 
+    if (selectedIndex !== undefined) {
+      picker.columns[0].selectedIndex = selectedIndex;
+    }
     await picker.present();
   }
 
   onSelectCategory() {
-    this.openPicker("category", this.categories);
+    const categoryId = this.form.get("category").value;
+    let selectedCateogryIndex: number;
+    if (categoryId) {
+      selectedCateogryIndex = this.categories.findIndex(
+        category => category.id === categoryId
+      );
+    }
+    this.openPicker("category", this.categories, selectedCateogryIndex);
   }
 
   onSelectLocation() {
-    this.openPicker("location", this.locations);
+    const locationId = this.form.get("location").value;
+    let selectedLocationIndex: number;
+    if (locationId) {
+      selectedLocationIndex = this.categories.findIndex(
+        location => location.id === locationId
+      );
+    }
+    this.openPicker("location", this.locations, selectedLocationIndex);
   }
 
   onFileSelected(imagePath) {
@@ -181,15 +209,33 @@ export class EditStuffPage implements OnInit, OnDestroy {
             id: this.stuffId
           })
           .subscribe(() => {
+            // schedule notifications if expiry date or name has changed
+            if (
+              this.editingStuff.expiryDate !== this.form.value.expiryDate ||
+              this.editingStuff.name !== this.form.value.name
+            ) {
+              this.notificationService.rescheduleNotification({
+                ...this.form.value,
+                categoryId: this.form.value.category,
+                locationId: this.form.value.location,
+                id: this.stuffId
+              });
+            }
+
             loadingEl.dismiss();
             this.form.reset();
             this.selected = {
               category: "",
               location: ""
             };
-            this.navCtrl.back();
+            this.navCtrl.navigateBack("/stuff/" + this.stuffId);
           });
       });
+  }
+
+  canDeactivate() {
+    console.log(this.form.dirty);
+    return !this.form.dirty;
   }
 
   ngOnDestroy() {

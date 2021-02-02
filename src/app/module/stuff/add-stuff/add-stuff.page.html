@@ -35,10 +35,36 @@
         <ion-col>
           <ion-item>
             <ion-label position="floating">Description</ion-label>
-            <ion-input formControlName="desc"></ion-input>
+            <ion-input formControlName="desc" clearInput></ion-input>
           </ion-item>
         </ion-col>
       </ion-row>
+      <ion-row>
+        <ion-col>
+          <app-datetime-wrapper>
+            <ion-item>
+              <ion-label position="floating">Expiry Date</ion-label>
+              <ion-datetime
+                formControlName="expiryDate"
+                min="1970"
+                max="2200"
+              ></ion-datetime>
+            </ion-item>
+          </app-datetime-wrapper>
+        </ion-col>
+      </ion-row>
+      <!-- <ion-row>
+        <ion-col>
+          <ion-item>
+            <ion-label position="floating">Reminder</ion-label>
+            <ion-datetime
+              formControlName="reminder"
+              displayFormat="h:mm A"
+              minuteValues="0,15,30,45"
+            ></ion-datetime>
+          </ion-item>
+        </ion-col>
+      </ion-row> -->
       <ion-row>
         <ion-col>
           <div class="input-group">

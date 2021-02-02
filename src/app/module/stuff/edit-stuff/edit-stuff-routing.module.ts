@@ -1,17 +1,18 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-
-import { EditStuffPage } from './edit-stuff.page';
+import { NgModule } from "@angular/core";
+import { RouterModule, Routes } from "@angular/router";
+import { StuffGuard } from "../stuff.guard";
+import { EditStuffPage } from "./edit-stuff.page";
 
 const routes: Routes = [
   {
-    path: '',
-    component: EditStuffPage
+    path: "",
+    component: EditStuffPage,
+    canDeactivate: [StuffGuard]
   }
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
 export class EditStuffPageRoutingModule {}
