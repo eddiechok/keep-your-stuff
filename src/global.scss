@@ -28,3 +28,11 @@
 .ion-text-danger {
   color: var(--ion-color-danger) !important;
 }
+
+.error-field {
+  padding-left: 16px;
+  display: block;
+  font-size: 14px;
+  padding-top: 7px;
+  color: var(--ion-color-danger);
+}

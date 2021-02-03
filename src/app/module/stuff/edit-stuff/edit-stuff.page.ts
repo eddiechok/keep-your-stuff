@@ -195,6 +195,13 @@ export class EditStuffPage implements OnInit, OnDestroy {
       this.form.markAllAsTouched();
       return;
     }
+
+    // navigate back if user didnt change anything
+    if (!this.form.dirty) {
+      this.navCtrl.navigateBack("/stuff/" + this.stuffId);
+      return;
+    }
+
     this.loadingCtrl
       .create({
         message: "Updating..."
@@ -234,7 +241,6 @@ export class EditStuffPage implements OnInit, OnDestroy {
   }
 
   canDeactivate() {
-    console.log(this.form.dirty);
     return !this.form.dirty;
   }
 

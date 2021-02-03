@@ -16,7 +16,7 @@
     <ion-grid *ngIf="!isLoading">
       <ion-row>
         <ion-col>
-          <ion-item>
+          <ion-item appControlErrorContainer>
             <ion-label position="floating"> Name </ion-label>
             <ion-input formControlName="name"></ion-input>
           </ion-item>
@@ -48,7 +48,7 @@
       </ion-row>
       <ion-row *ngIf="form.get('color').invalid && form.get('color').touched">
         <ion-col>
-          <ion-text color="danger"><p>Please select an icon.</p></ion-text>
+          <div class="error-field">Please select an icon.</div>
         </ion-col>
       </ion-row>
       <ion-row>

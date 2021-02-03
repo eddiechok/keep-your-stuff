@@ -1,6 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
-import { ReactiveFormsModule } from "@angular/forms";
+import { ReactiveFormsModule, FormsModule } from "@angular/forms";
 import { IonicModule } from "@ionic/angular";
 import { DatetimeWrapperComponent } from "./components/datetime-wrapper/datetime-wrapper.component";
 import { ImageInputComponent } from "./components/image-input/image-input.component";
@@ -11,6 +11,10 @@ import { SkeletonListComponent } from "./components/skeleton/skeleton-list/skele
 import { SpinnerComponent } from "./components/spinner/spinner.component";
 import { DefaultImageDirective } from "./directives/default-image.directive";
 import { SvgModule } from "./svg/svg.module";
+import { ControlErrorsDirective } from "./directives/control-errors.directive";
+import { FormSubmitDirective } from "./directives/form-submit.directive";
+import { ControlErrorComponent } from "./components/control-error/control-error.component";
+import { ControlErrorContainerDirective } from "./directives/control-error-container.directive";
 
 @NgModule({
   declarations: [
@@ -21,9 +25,19 @@ import { SvgModule } from "./svg/svg.module";
     ImageInputComponent,
     ImageViewerComponent,
     DefaultImageDirective,
-    DatetimeWrapperComponent
+    DatetimeWrapperComponent,
+    ControlErrorsDirective,
+    FormSubmitDirective,
+    ControlErrorComponent,
+    ControlErrorContainerDirective
   ],
-  imports: [CommonModule, IonicModule, SvgModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    IonicModule,
+    SvgModule,
+    ReactiveFormsModule,
+    FormsModule
+  ],
   exports: [
     SpinnerComponent,
     SkeletonListComponent,
@@ -32,7 +46,11 @@ import { SvgModule } from "./svg/svg.module";
     ImageInputComponent,
     ImageViewerComponent,
     DefaultImageDirective,
-    DatetimeWrapperComponent
+    DatetimeWrapperComponent,
+    ControlErrorContainerDirective,
+    ControlErrorsDirective,
+    FormSubmitDirective,
+    ControlErrorContainerDirective
   ]
 })
 export class SharedModule {}

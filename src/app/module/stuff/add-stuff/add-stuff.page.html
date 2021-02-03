@@ -14,7 +14,7 @@
 
 <ion-content>
   <app-spinner *ngIf="isLoading"></app-spinner>
-  <form [formGroup]="form" *ngIf="!isLoading">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="!isLoading">
     <ion-grid>
       <ion-row>
         <ion-col>
@@ -25,7 +25,7 @@
       </ion-row>
       <ion-row>
         <ion-col>
-          <ion-item>
+          <ion-item appControlErrorContainer>
             <ion-label position="floating">Name</ion-label>
             <ion-input formControlName="name"></ion-input>
           </ion-item>
@@ -67,7 +67,7 @@
       </ion-row> -->
       <ion-row>
         <ion-col>
-          <div class="input-group">
+          <div appControlErrorContainer class="input-group">
             <ion-item (click)="onSelectCategory()">
               <ion-label position="floating"> Category </ion-label>
               <ion-input type="hidden" formControlName="category"></ion-input>
@@ -81,7 +81,7 @@
       </ion-row>
       <ion-row>
         <ion-col>
-          <div class="input-group">
+          <div appControlErrorContainer class="input-group">
             <ion-item (click)="onSelectLocation()">
               <ion-label position="floating"> Location </ion-label>
               <ion-input type="hidden" formControlName="location"></ion-input>

@@ -5,6 +5,7 @@ import { CategoryRoutingModule } from "./category-routing.module";
 import { AddCategoryModalComponent } from "./add-category-modal/add-category-modal.component";
 import { IonicModule } from "@ionic/angular";
 import { ReactiveFormsModule } from "@angular/forms";
+import { SharedModule } from "src/app/shared/shared.module";
 
 @NgModule({
   declarations: [AddCategoryModalComponent],
@@ -12,7 +13,8 @@ import { ReactiveFormsModule } from "@angular/forms";
     CommonModule,
     CategoryRoutingModule,
     IonicModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    SharedModule
   ],
   entryComponents: [AddCategoryModalComponent]
 })

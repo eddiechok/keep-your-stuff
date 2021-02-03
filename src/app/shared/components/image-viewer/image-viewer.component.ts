@@ -1,6 +1,6 @@
-import { Component, OnInit, Input } from "@angular/core";
-import { FullScreenImage } from "@ionic-native/full-screen-image/ngx";
+import { Component, Input, OnInit } from "@angular/core";
 import { Capacitor } from "@capacitor/core";
+import { PhotoViewer } from "@ionic-native/photo-viewer/ngx";
 
 @Component({
   selector: "app-image-viewer",
@@ -10,15 +10,15 @@ import { Capacitor } from "@capacitor/core";
 export class ImageViewerComponent implements OnInit {
   @Input() imagePath = "";
 
-  constructor(private fullScreenImage: FullScreenImage) {}
+  constructor(private photoViewer: PhotoViewer) {}
 
   ngOnInit() {}
 
   onClick() {
+    console.log("CONSOLE LOG !!!!! !!! !!!!!! !!!!");
     if (Capacitor.isNative) {
-      this.fullScreenImage.showImageURL(this.imagePath).then(a => {
-        console.log(a);
-      });
+      console.log("Photo Viewer: " + JSON.stringify(this.photoViewer));
+      this.photoViewer.show(this.imagePath, "");
     }
   }
 }

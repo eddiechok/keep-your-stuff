@@ -1,6 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
-import { ReactiveFormsModule } from "@angular/forms";
+import { ReactiveFormsModule, FormsModule } from "@angular/forms";
 import { IonicModule } from "@ionic/angular";
 import { SharedModule } from "src/app/shared/shared.module";
 import { AddStuffPageRoutingModule } from "./add-stuff-routing.module";
@@ -12,7 +12,8 @@ import { AddStuffPage } from "./add-stuff.page";
     IonicModule,
     AddStuffPageRoutingModule,
     ReactiveFormsModule,
-    SharedModule
+    SharedModule,
+    FormsModule
   ],
   declarations: [AddStuffPage]
 })
