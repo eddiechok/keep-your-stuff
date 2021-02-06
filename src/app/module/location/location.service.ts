@@ -1,6 +1,12 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
-import { switchMap, take, tap } from "rxjs/operators";
+import {
+  BehaviorSubject,
+  combineLatest,
+  Observable,
+  of,
+  throwError
+} from "rxjs";
+import { map, switchMap, take, tap } from "rxjs/operators";
 import { DbService } from "src/app/shared/services/db.service";
 import { Location } from "./location.model";
 
@@ -83,11 +89,21 @@ export class LocationService {
   }
 
   deleteLocation(id: number) {
-    return combineLatest([
-      this.db.deleteRowById("location", id),
-      this._locations.pipe(take(1))
-    ]).pipe(
-      tap(([_, locations]) => {
+    return this._locations.pipe(
+      take(1),
+      switchMap(locations => {
+        const location = locations.find(location => location.id === id);
+        if (!location) {
+          return throwError("not_found");
+        } else if (location.stuffs) {
+          return throwError("stuffs_not_empty");
+        } else {
+          return this.db
+            .deleteRowById("location", id)
+            .pipe(map(() => locations));
+        }
+      }),
+      tap(locations => {
         this._locations.next(locations.filter(location => location.id !== id));
       })
     );

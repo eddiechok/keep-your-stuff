@@ -1,6 +1,10 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { NavController } from "@ionic/angular";
+import {
+  AlertController,
+  LoadingController,
+  NavController
+} from "@ionic/angular";
 import { combineLatest, Subscription } from "rxjs";
 import {
   switchMap,
@@ -28,7 +32,9 @@ export class StuffDetailPage implements OnInit, OnDestroy {
     private navCtrl: NavController,
     private stuffService: StuffService,
     private categoryService: CategoryService,
-    private locationService: LocationService
+    private locationService: LocationService,
+    private alertCtrl: AlertController,
+    private loadingCtrl: LoadingController
   ) {}
 
   ngOnInit() {
@@ -76,6 +82,50 @@ export class StuffDetailPage implements OnInit, OnDestroy {
               this.isLoading = false;
             }
           );
+      });
+  }
+
+  onDelete() {
+    this.alertCtrl
+      .create({
+        header: "Confirm to delete?",
+        message: "Deleted data cannot be reverted.",
+        buttons: [
+          {
+            text: "Cancel",
+            role: "cancel"
+          },
+          {
+            text: "Delete",
+            cssClass: "ion-text-danger",
+            handler: () => {
+              this.loadingCtrl
+                .create({
+                  message: "Deleting..."
+                })
+                .then(el => {
+                  el.present();
+                  this.stuffService
+                    .deleteStuff(this.stuff.id)
+                    .pipe(
+                      switchMap(() =>
+                        combineLatest([
+                          this.categoryService.loadCategories(),
+                          this.locationService.loadLocations()
+                        ])
+                      )
+                    )
+                    .subscribe(() => {
+                      el.dismiss();
+                      this.navCtrl.back();
+                    });
+                });
+            }
+          }
+        ]
+      })
+      .then(el => {
+        el.present();
       });
   }
 

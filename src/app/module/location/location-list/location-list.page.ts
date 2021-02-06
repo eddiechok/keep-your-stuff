@@ -3,7 +3,8 @@ import {
   AlertController,
   IonItemSliding,
   LoadingController,
-  ModalController
+  ModalController,
+  ToastController
 } from "@ionic/angular";
 import { Subscription } from "rxjs";
 import { AddLocationModalComponent } from "../add-location-modal/add-location-modal.component";
@@ -24,7 +25,8 @@ export class LocationListPage implements OnInit, OnDestroy {
     private locationService: LocationService,
     private modalCtrl: ModalController,
     private alertCtrl: AlertController,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController
   ) {}
 
   ngOnInit() {
@@ -70,9 +72,28 @@ export class LocationListPage implements OnInit, OnDestroy {
                 })
                 .then(el => {
                   el.present();
-                  this.locationService.deleteLocation(id).subscribe(() => {
-                    el.dismiss();
-                  });
+                  this.locationService.deleteLocation(id).subscribe(
+                    () => {
+                      el.dismiss();
+                    },
+                    err => {
+                      let errorMsg: string;
+                      if (err === "stuffs_not_empty") {
+                        errorMsg =
+                          "There are still stuffs in this location. Please remove all the stuffs in it before deleting.";
+                      } else if (err === "not_found") {
+                        errorMsg = "Location not found. Please try again";
+                      }
+                      this.toastCtrl
+                        .create({
+                          message: errorMsg,
+                          duration: 5000,
+                          color: "danger"
+                        })
+                        .then(toastEl => toastEl.present());
+                      el.dismiss();
+                    }
+                  );
                 });
             }
           }

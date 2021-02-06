@@ -28,6 +28,11 @@ const routes: Routes = [
       import("./add-stuff/add-stuff.module").then(m => m.AddStuffPageModule)
   },
   {
+    path: "add/:type/:id",
+    loadChildren: () =>
+      import("./add-stuff/add-stuff.module").then(m => m.AddStuffPageModule)
+  },
+  {
     path: ":id/edit",
     loadChildren: () =>
       import("./edit-stuff/edit-stuff.module").then(m => m.EditStuffPageModule)

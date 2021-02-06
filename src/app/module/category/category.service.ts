@@ -1,5 +1,11 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
+import {
+  BehaviorSubject,
+  combineLatest,
+  Observable,
+  of,
+  throwError
+} from "rxjs";
 import { delay, map, switchMap, take, tap } from "rxjs/operators";
 import { DbService } from "src/app/shared/services/db.service";
 import { Category } from "./category.model";
@@ -55,7 +61,8 @@ export class CategoryService {
       tap(([id, categories]) => {
         const newCategory: Category = {
           id,
-          ...category
+          ...category,
+          stuffs: 0
         };
         this._categories.next(categories.concat(newCategory));
       })
@@ -83,11 +90,21 @@ export class CategoryService {
   }
 
   deleteCategory(id: number) {
-    return combineLatest([
-      this.db.deleteRowById("category", id),
-      this._categories.pipe(take(1))
-    ]).pipe(
-      tap(([_, categories]) => {
+    return this._categories.pipe(
+      take(1),
+      switchMap(categories => {
+        const category = categories.find(category => category.id === id);
+        if (!category) {
+          return throwError("not_found");
+        } else if (category.stuffs) {
+          return throwError("stuffs_not_empty");
+        } else {
+          return this.db
+            .deleteRowById("category", id)
+            .pipe(map(() => categories));
+        }
+      }),
+      tap(categories => {
         this._categories.next(
           categories.filter(category => category.id !== id)
         );

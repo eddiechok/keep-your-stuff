@@ -17,6 +17,8 @@ export class StuffByTypePage implements OnInit, OnDestroy {
   title: string;
   stuffs: Stuff[];
   isLoading = false;
+  type: string;
+  id: number;
   private sub: Subscription;
 
   constructor(
@@ -33,14 +35,14 @@ export class StuffByTypePage implements OnInit, OnDestroy {
         this.navCtrl.back();
       }
       this.isLoading = true;
-      const id = +paramMap.get("id");
-      const type = paramMap.get("type");
+      this.id = +paramMap.get("id");
+      this.type = paramMap.get("type");
       let obs$: Observable<any>;
 
-      if (type === "category") {
-        obs$ = this.categoryService.getCategory(id);
-      } else if (type === "location") {
-        obs$ = this.locationService.getLocation(id);
+      if (this.type === "category") {
+        obs$ = this.categoryService.getCategory(this.id);
+      } else if (this.type === "location") {
+        obs$ = this.locationService.getLocation(this.id);
       } else {
         this.navCtrl.back();
       }
@@ -49,10 +51,10 @@ export class StuffByTypePage implements OnInit, OnDestroy {
         .pipe(
           map(data => {
             data[1] = data[1].filter(stuff => {
-              if (type === "category") {
-                return stuff.categoryId === id;
-              } else if (type === "location") {
-                return stuff.locationId === id;
+              if (this.type === "category") {
+                return stuff.categoryId === this.id;
+              } else if (this.type === "location") {
+                return stuff.locationId === this.id;
               }
             });
             return data;

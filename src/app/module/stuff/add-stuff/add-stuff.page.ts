@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, Validators } from "@angular/forms";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import {
   AlertController,
   LoadingController,
@@ -54,14 +54,40 @@ export class AddStuffPage implements OnInit, OnDestroy {
     private loadingCtrl: LoadingController,
     private alertCtrl: AlertController,
     private router: Router,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
     this.sub = combineLatest([
+      this.route.paramMap,
       this.categoryService.categories,
       this.locationService.locations
-    ]).subscribe(([categories, locations]) => {
+    ]).subscribe(([paramMap, categories, locations]) => {
+      // if add stuff from stuff-by-type page
+      if (paramMap.has("type") && paramMap.has("id")) {
+        const type = paramMap.get("type");
+        const id = +paramMap.get("id");
+
+        // assign selected category or location
+        if (type === "category") {
+          const selectedCategory = categories.find(
+            category => category.id === id
+          );
+          if (selectedCategory) {
+            this.form.patchValue({ [type]: id });
+            this.selected[type] = selectedCategory.name;
+          }
+        } else {
+          const selectedLocation = locations.find(
+            location => location.id === id
+          );
+          if (selectedLocation) {
+            this.form.patchValue({ [type]: id });
+            this.selected[type] = selectedLocation.name;
+          }
+        }
+      }
       this.categories = [...categories];
       this.locations = [...locations];
       this.isLoading = false;

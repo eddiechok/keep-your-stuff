@@ -3,7 +3,8 @@ import {
   AlertController,
   IonItemSliding,
   LoadingController,
-  ModalController
+  ModalController,
+  ToastController
 } from "@ionic/angular";
 import { Subscription } from "rxjs";
 import { AddCategoryModalComponent } from "../add-category-modal/add-category-modal.component";
@@ -24,7 +25,8 @@ export class CategoryListPage implements OnInit, OnDestroy {
     private categoryService: CategoryService,
     private modalCtrl: ModalController,
     private alertCtrl: AlertController,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController
   ) {}
 
   ngOnInit() {
@@ -70,9 +72,28 @@ export class CategoryListPage implements OnInit, OnDestroy {
                 })
                 .then(el => {
                   el.present();
-                  this.categoryService.deleteCategory(id).subscribe(() => {
-                    el.dismiss();
-                  });
+                  this.categoryService.deleteCategory(id).subscribe(
+                    () => {
+                      el.dismiss();
+                    },
+                    err => {
+                      let errorMsg: string;
+                      if (err === "stuffs_not_empty") {
+                        errorMsg =
+                          "There are still stuffs in this category. Please remove all the stuffs in it before deleting.";
+                      } else if (err === "not_found") {
+                        errorMsg = "Category not found. Please try again";
+                      }
+                      this.toastCtrl
+                        .create({
+                          message: errorMsg,
+                          duration: 5000,
+                          color: "danger"
+                        })
+                        .then(toastEl => toastEl.present());
+                      el.dismiss();
+                    }
+                  );
                 });
             }
           }
