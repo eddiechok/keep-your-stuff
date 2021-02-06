@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { ModalController } from "@ionic/angular";
+import { ModalController, ToastController } from "@ionic/angular";
 import { take } from "rxjs/operators";
 import { LocationService } from "../location.service";
 
@@ -27,7 +27,8 @@ export class AddLocationModalComponent implements OnInit {
   constructor(
     private modalCtrl: ModalController,
     private fb: FormBuilder,
-    private locationService: LocationService
+    private locationService: LocationService,
+    private toastCtrl: ToastController
   ) {}
 
   ngOnInit() {
@@ -41,13 +42,29 @@ export class AddLocationModalComponent implements OnInit {
       this.locationService
         .getLocation(this.id)
         .pipe(take(1))
-        .subscribe(location => {
-          this.form.setValue({
-            name: location.name,
-            color: location.color
-          });
-          this.isLoading = false;
-        });
+        .subscribe(
+          location => {
+            this.form.setValue({
+              name: location.name,
+              color: location.color
+            });
+            this.isLoading = false;
+          },
+          (err: Error) => {
+            if (err.message === "not_found") {
+              this.toastCtrl
+                .create({
+                  message: "Error in finding location. Please try again.",
+                  duration: 3000,
+                  color: "danger"
+                })
+                .then(toastEl => {
+                  toastEl.present();
+                  this.modalCtrl.dismiss();
+                });
+            }
+          }
+        );
     }
   }
 

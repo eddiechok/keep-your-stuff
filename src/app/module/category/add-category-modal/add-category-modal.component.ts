@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { ModalController } from "@ionic/angular";
+import { ModalController, ToastController } from "@ionic/angular";
 import { take } from "rxjs/operators";
 import categoryIcon from "../category-icon.json";
 import { CategoryService } from "../category.service";
@@ -19,7 +19,8 @@ export class AddCategoryModalComponent implements OnInit {
   constructor(
     private modalCtrl: ModalController,
     private fb: FormBuilder,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private toastCtrl: ToastController
   ) {}
 
   ngOnInit() {
@@ -33,13 +34,29 @@ export class AddCategoryModalComponent implements OnInit {
       this.categoryService
         .getCategory(this.id)
         .pipe(take(1))
-        .subscribe(category => {
-          this.form.setValue({
-            name: category.name,
-            icon: category.icon
-          });
-          this.isLoading = false;
-        });
+        .subscribe(
+          category => {
+            this.form.setValue({
+              name: category.name,
+              icon: category.icon
+            });
+            this.isLoading = false;
+          },
+          (err: Error) => {
+            if (err.message === "not_found") {
+              this.toastCtrl
+                .create({
+                  message: "Error in finding category. Please try again.",
+                  duration: 3000,
+                  color: "danger"
+                })
+                .then(toastEl => {
+                  toastEl.present();
+                  this.modalCtrl.dismiss();
+                });
+            }
+          }
+        );
     }
   }
 
@@ -62,7 +79,8 @@ export class AddCategoryModalComponent implements OnInit {
     } else {
       this.categoryService
         .addCategory({
-          ...this.form.value
+          icon: this.form.value.icon,
+          name: this.form.value.name
         })
         .subscribe(() => {
           this.modalCtrl.dismiss();

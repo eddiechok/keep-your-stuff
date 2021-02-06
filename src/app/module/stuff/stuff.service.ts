@@ -1,95 +1,89 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject } from "rxjs";
-import { delay, map, take, tap } from "rxjs/operators";
+import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
+import { map, switchMap, take, tap } from "rxjs/operators";
+import { DbService } from "src/app/shared/services/db.service";
 import { Stuff } from "./stuff.model";
 
-function getImgSrc() {
-  const src = `https://dummyimage.com/600x400/${Math.round(
-    Math.random() * 99999
-  )}/fff.png`;
-  return src;
-}
 @Injectable({
   providedIn: "root"
 })
 export class StuffService {
-  private _stuffs = new BehaviorSubject<Stuff[]>([
-    {
-      id: 1,
-      name: "Pencil",
-      categoryId: 1,
-      locationId: 1,
-      imgUrl:
-        "https://upload.wikimedia.org/wikipedia/commons/0/08/Pencils_hb.jpg"
-    }
-  ]);
+  private _stuffs = new BehaviorSubject<Stuff[]>([]);
 
-  constructor() {
-    const stuffs: Stuff[] = [];
-    for (let i = 1; i <= 1000; i++) {
-      stuffs.push({
-        id: i,
-        name: "Pencil",
-        categoryId: 1,
-        locationId: 1,
-        imgUrl: getImgSrc()
-        // "https://upload.wikimedia.org/wikipedia/commons/0/08/Pencils_hb.jpg"
-      });
-    }
-    this._stuffs.next(stuffs);
+  constructor(private db: DbService) {
+    this.loadStuffs().subscribe();
   }
 
   get stuffs() {
-    return this._stuffs.pipe(delay(1000));
+    return this._stuffs.asObservable();
+  }
+
+  loadStuffs() {
+    return this.db.getRows("stuff").pipe(
+      tap(stuffs => {
+        this._stuffs.next(stuffs);
+      })
+    );
   }
 
   getStuff(id: number) {
     return this._stuffs.pipe(
-      delay(1000),
-      map(stuffs => {
+      switchMap(stuffs => {
         const stuff = stuffs.find(stuff => stuff.id === id);
         if (stuff) {
-          return { ...stuff };
+          return of(stuff);
         } else {
-          throw new Error("NO_RECORD_FOUND");
+          return this.db.getRowById("stuff", id) as Observable<Stuff>;
         }
+      }),
+      tap(stuff => {
+        if (!stuff) throw new Error("not_found");
       })
     );
   }
 
   addStuff(stuff: Omit<Stuff, "id">) {
-    return this._stuffs.pipe(
-      take(1),
-      map(stuffs => {
-        const id = stuffs.length + 1;
+    return combineLatest([
+      this.db.insertRow("stuff", stuff),
+      this._stuffs.pipe(take(1))
+    ]).pipe(
+      tap(([id, stuffs]) => {
+        const newStuff: Stuff = {
+          id,
+          ...stuff
+        };
+        this._stuffs.next(stuffs.concat(newStuff));
+      }),
+      map(([id, _]) => id)
+    );
+  }
 
-        this._stuffs.next(
-          stuffs.concat({
-            id: id,
-            ...stuff
-          })
-        );
+  updateStuff(id: number, data: Omit<Stuff, "id">) {
+    console.log(data);
+    return combineLatest([
+      this.db.updateRowById("stuff", data, id),
+      this._stuffs.pipe(take(1))
+    ]).pipe(
+      tap(([_, stuffs]) => {
+        const newStuffs = [...stuffs];
+        const updateStuffIndex = newStuffs.findIndex(stuff => stuff.id === id);
+        newStuffs[updateStuffIndex] = {
+          ...newStuffs[updateStuffIndex],
+          ...data
+        };
 
-        return id;
+        this._stuffs.next(newStuffs);
       })
     );
   }
 
-  updateStuff(editedStuff: Stuff) {
-    return this._stuffs.pipe(
-      delay(1000),
-      take(1),
-      map(stuffs => {
-        const updatedStuffs = [...stuffs];
-        const updatedIndex = updatedStuffs.findIndex(
-          stuff => stuff.id === editedStuff.id
-        );
-        updatedStuffs[updatedIndex] = {
-          ...updatedStuffs[updatedIndex],
-          ...editedStuff
-        };
-        this._stuffs.next(updatedStuffs);
-        return;
+  deleteStuff(id: number) {
+    return combineLatest([
+      this.db.deleteRowById("stuff", id),
+      this._stuffs.pipe(take(1))
+    ]).pipe(
+      tap(([_, stuffs]) => {
+        this._stuffs.next(stuffs.filter(stuff => stuff.id !== id));
       })
     );
   }

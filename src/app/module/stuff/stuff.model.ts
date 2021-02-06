@@ -4,11 +4,11 @@ import { Location } from "../location/location.model";
 export type Stuff = {
   id: number;
   name: string;
-  categoryId: number;
-  locationId: number;
   imgUrl?: string;
   desc?: string;
   expiryDate?: string;
+  categoryId: number;
+  locationId: number;
 };
 
 export type StuffWithRelations = {

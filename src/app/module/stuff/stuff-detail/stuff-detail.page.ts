@@ -50,11 +50,11 @@ export class StuffDetailPage implements OnInit, OnDestroy {
           .getStuff(id)
           .pipe(
             switchMap(stuff => {
-              console.log("stuff");
-              return combineLatest(
+              console.log("stuff detail: stuff");
+              return combineLatest([
                 this.categoryService.getCategory(stuff.categoryId),
                 this.locationService.getLocation(stuff.locationId)
-              ).pipe(
+              ]).pipe(
                 map(([category, location]) => {
                   console.log("stuff detail: category and location");
                   const newStuff: StuffWithRelations = {

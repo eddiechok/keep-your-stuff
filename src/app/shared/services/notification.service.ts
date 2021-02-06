@@ -127,7 +127,11 @@ export class NotificationService {
    * Reschedule notification when the stuff's expiry date is updated
    * @param stuff
    */
-  async rescheduleNotification(stuff: Stuff) {
+  async rescheduleNotification(stuff: {
+    id: number;
+    name: string;
+    expiryDate: string;
+  }) {
     // schedule new notification
     this.reminderService.reminder.pipe(take(1)).subscribe(async reminder => {
       console.warn(

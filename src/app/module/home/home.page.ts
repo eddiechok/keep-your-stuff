@@ -8,24 +8,15 @@ import { LocationService } from "../location/location.service";
 import { Stuff } from "../stuff/stuff.model";
 import { StuffService } from "../stuff/stuff.service";
 
-type CategoryWithStuff = Category & {
-  stuffs: number;
-};
-
-type LocationWithStuff = Location & {
-  stuffs: number;
-};
-
 type Mode = "category" | "location";
-
 @Component({
   selector: "app-home",
   templateUrl: "./home.page.html",
   styleUrls: ["./home.page.scss"]
 })
 export class HomePage implements OnInit, OnDestroy {
-  categories: CategoryWithStuff[] = [];
-  locations: LocationWithStuff[] = [];
+  categories: Category[] = [];
+  locations: Location[] = [];
   isLoading = false;
   mode: Mode = "category";
   private categorySub: Subscription;
@@ -37,7 +28,7 @@ export class HomePage implements OnInit, OnDestroy {
     private locationService: LocationService
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.onSegmentChange("category");
   }
 
@@ -51,22 +42,10 @@ export class HomePage implements OnInit, OnDestroy {
           switchMap(stuffs => {
             _stuffs = [...stuffs];
             return this.categoryService.categories;
-          }),
-          map(categories => {
-            const newCategoryWithStuffs: CategoryWithStuff[] = [];
-            categories.forEach(category => {
-              newCategoryWithStuffs.push({
-                ...category,
-                stuffs: _stuffs.filter(
-                  stuff => stuff.categoryId === category.id
-                ).length
-              });
-            });
-            return newCategoryWithStuffs;
           })
         )
-        .subscribe(newCategoryWithStuffs => {
-          this.categories = newCategoryWithStuffs;
+        .subscribe(categories => {
+          this.categories = categories;
           this.isLoading = false;
         });
     } else if (value === "location" && !this.locationSub) {
@@ -77,22 +56,10 @@ export class HomePage implements OnInit, OnDestroy {
           switchMap(stuffs => {
             _stuffs = [...stuffs];
             return this.locationService.locations;
-          }),
-          map(locations => {
-            const newLocationWithStuffs: LocationWithStuff[] = [];
-            locations.forEach(location => {
-              newLocationWithStuffs.push({
-                ...location,
-                stuffs: _stuffs.filter(
-                  stuff => stuff.locationId === location.id
-                ).length
-              });
-            });
-            return newLocationWithStuffs;
           })
         )
-        .subscribe(newLocationWithStuffs => {
-          this.locations = newLocationWithStuffs;
+        .subscribe(locations => {
+          this.locations = locations;
           this.isLoading = false;
         });
     }

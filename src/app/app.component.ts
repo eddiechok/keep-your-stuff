@@ -1,10 +1,9 @@
-import { Component, NgZone } from "@angular/core";
+import { Component } from "@angular/core";
 
 import { Platform } from "@ionic/angular";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 import { StatusBar } from "@ionic-native/status-bar/ngx";
 import { Plugins } from "@capacitor/core";
-import { Router } from "@angular/router";
 import { NotificationService } from "./shared/services/notification.service";
 
 @Component({
@@ -17,8 +16,6 @@ export class AppComponent {
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
-    private router: Router,
-    private ngZone: NgZone,
     private notificationService: NotificationService
   ) {
     this.initializeApp();

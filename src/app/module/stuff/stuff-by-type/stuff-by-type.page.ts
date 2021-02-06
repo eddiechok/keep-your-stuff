@@ -45,7 +45,7 @@ export class StuffByTypePage implements OnInit, OnDestroy {
         this.navCtrl.back();
       }
 
-      this.sub = combineLatest(obs$, this.stuffService.stuffs)
+      this.sub = combineLatest([obs$, this.stuffService.stuffs])
         .pipe(
           map(data => {
             data[1] = data[1].filter(stuff => {

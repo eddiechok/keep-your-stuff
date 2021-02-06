@@ -75,11 +75,11 @@ export class EditStuffPage implements OnInit, OnDestroy {
       })
     );
 
-    this.sub = combineLatest(
+    this.sub = combineLatest([
       this.categoryService.categories,
       this.locationService.locations,
       stuffObs$
-    ).subscribe(
+    ]).subscribe(
       ([categories, locations, stuff]) => {
         this.editingStuff = { ...stuff };
         this.categories = [...categories];
@@ -150,6 +150,7 @@ export class EditStuffPage implements OnInit, OnDestroy {
           handler: data => {
             const selected = data[name].value as { id: number; name: string };
             this.form.patchValue({ [name]: selected.id });
+            this.form.markAsDirty();
             this.selected[name] = selected.name;
           }
         }
@@ -197,6 +198,7 @@ export class EditStuffPage implements OnInit, OnDestroy {
     }
 
     // navigate back if user didnt change anything
+    console.log(this.form.dirty);
     if (!this.form.dirty) {
       this.navCtrl.navigateBack("/stuff/" + this.stuffId);
       return;
@@ -208,13 +210,23 @@ export class EditStuffPage implements OnInit, OnDestroy {
       })
       .then(loadingEl => {
         loadingEl.present();
+        const data = {
+          ...this.form.value,
+          categoryId: this.form.value.category,
+          locationId: this.form.value.location
+        };
+        delete data.category;
+        delete data.location;
         this.stuffService
-          .updateStuff({
-            ...this.form.value,
-            categoryId: this.form.value.category,
-            locationId: this.form.value.location,
-            id: this.stuffId
-          })
+          .updateStuff(this.stuffId, data)
+          .pipe(
+            switchMap(() => {
+              return combineLatest([
+                this.categoryService.loadCategories(),
+                this.locationService.loadLocations()
+              ]);
+            })
+          )
           .subscribe(() => {
             // schedule notifications if expiry date or name has changed
             if (
@@ -222,10 +234,9 @@ export class EditStuffPage implements OnInit, OnDestroy {
               this.editingStuff.name !== this.form.value.name
             ) {
               this.notificationService.rescheduleNotification({
-                ...this.form.value,
-                categoryId: this.form.value.category,
-                locationId: this.form.value.location,
-                id: this.stuffId
+                id: this.stuffId,
+                name: this.form.value.name,
+                expiryDate: this.form.value.expiryDate
               });
             }
 

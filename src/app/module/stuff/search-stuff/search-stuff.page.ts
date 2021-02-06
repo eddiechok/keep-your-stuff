@@ -44,11 +44,11 @@ export class SearchStuffPage implements OnInit, OnDestroy {
         }), // filter empty value
         switchMap(() => {
           this.isLoading = true;
-          return combineLatest(
+          return combineLatest([
             this.categoryService.categories,
             this.locationService.locations,
             this.stuffService.stuffs
-          ).pipe(
+          ]).pipe(
             takeUntil(
               this.stopSearch$.pipe(
                 tap(() => {

@@ -17,6 +17,7 @@ import { Location } from "../../location/location.model";
 import { LocationService } from "../../location/location.service";
 import { StuffService } from "../stuff.service";
 import { NotificationService } from "src/app/shared/services/notification.service";
+import { map, switchMap } from "rxjs/operators";
 
 @Component({
   selector: "app-add-stuff",
@@ -57,10 +58,10 @@ export class AddStuffPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.sub = combineLatest(
+    this.sub = combineLatest([
       this.categoryService.categories,
       this.locationService.locations
-    ).subscribe(([categories, locations]) => {
+    ]).subscribe(([categories, locations]) => {
       this.categories = [...categories];
       this.locations = [...locations];
       this.isLoading = false;
@@ -160,12 +161,23 @@ export class AddStuffPage implements OnInit, OnDestroy {
       })
       .then(loadingEl => {
         loadingEl.present();
+        const data = {
+          ...this.form.value,
+          categoryId: this.form.value.category,
+          locationId: this.form.value.location
+        };
+        delete data.category;
+        delete data.location;
         this.stuffService
-          .addStuff({
-            ...this.form.value,
-            categoryId: this.form.value.category,
-            locationId: this.form.value.location
-          })
+          .addStuff(data)
+          .pipe(
+            switchMap(newId => {
+              return combineLatest([
+                this.categoryService.loadCategories(),
+                this.locationService.loadLocations()
+              ]).pipe(map(() => newId));
+            })
+          )
           .subscribe(newId => {
             loadingEl.dismiss();
             this.alertCtrl
@@ -207,10 +219,9 @@ export class AddStuffPage implements OnInit, OnDestroy {
             // schedule notifications
             if (this.form.value.expiryDate) {
               this.notificationService.rescheduleNotification({
-                ...this.form.value,
-                categoryId: this.form.value.category,
-                locationId: this.form.value.location,
-                id: newId
+                id: newId,
+                name: this.form.value.name,
+                expiryDate: this.form.value.expiryDate
               });
             }
           });

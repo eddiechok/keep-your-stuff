@@ -46,7 +46,6 @@ export class ControlErrorsDirective implements OnInit, OnDestroy {
     merge(this.submit$, this.control.valueChanges)
       .pipe(takeUntil(this.destroyed$)) // cancel the subscription after the component is destroyed
       .subscribe(() => {
-        console.log(this.control);
         const { touched, errors, dirty } = this.control;
         if (errors && (touched || dirty)) {
           const firstKey = Object.keys(errors)[0]; // get the firstKey in control errors
