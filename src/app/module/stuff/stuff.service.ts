@@ -1,7 +1,8 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
-import { map, switchMap, take, tap } from "rxjs/operators";
+import { BehaviorSubject, combineLatest, from, Observable, of } from "rxjs";
+import { map, switchMap, take, takeWhile, tap } from "rxjs/operators";
 import { DbService } from "src/app/shared/services/db.service";
+import { PhotoService } from "src/app/shared/services/photo.service";
 import { Stuff } from "./stuff.model";
 
 @Injectable({
@@ -9,8 +10,9 @@ import { Stuff } from "./stuff.model";
 })
 export class StuffService {
   private _stuffs = new BehaviorSubject<Stuff[]>([]);
+  private _isLoaded$ = new BehaviorSubject(false);
 
-  constructor(private db: DbService) {
+  constructor(private db: DbService, private photoService: PhotoService) {
     this.loadStuffs().subscribe();
   }
 
@@ -18,10 +20,34 @@ export class StuffService {
     return this._stuffs.asObservable();
   }
 
+  get isLoaded$() {
+    // destroy the subscriber when the stuff is loaded
+    return this._isLoaded$.pipe(takeWhile(isLoaded => !isLoaded, true));
+  }
+
   loadStuffs() {
     return this.db.getRows("stuff").pipe(
+      // use switchMap when return as promise
+      switchMap(async (stuffs: Stuff[]) => {
+        const loadedImageStuffs: Stuff[] = [];
+        // wait for all the promise to execute in parallel
+        await Promise.all(
+          // map all the stuffs to an array of promise
+          stuffs.map(async stuff => {
+            if (stuff.imgUrl) {
+              const filepath = await this.photoService.loadPicture(
+                stuff.imgUrl
+              );
+              stuff.imgUrl = filepath;
+            }
+            loadedImageStuffs.push(stuff);
+          })
+        );
+        return loadedImageStuffs;
+      }),
       tap(stuffs => {
         this._stuffs.next(stuffs);
+        this._isLoaded$.next(true);
       })
     );
   }
@@ -33,7 +59,25 @@ export class StuffService {
         if (stuff) {
           return of(stuff);
         } else {
-          return this.db.getRowById("stuff", id) as Observable<Stuff>;
+          return this.db.getRowById("stuff", id).pipe(
+            switchMap((stuff: Stuff) => {
+              // load pic from filepath if has filepath
+              if (stuff.imgUrl) {
+                return from(this.photoService.loadPicture(stuff.imgUrl)).pipe(
+                  map(filepath => {
+                    stuff.imgUrl = filepath;
+                    return stuff;
+                  }),
+                  tap(stuff => {
+                    // add new stuff to stuffs obsvervable
+                    const updatedStuffs = [...stuffs, stuff];
+                    this._stuffs.next(updatedStuffs);
+                  })
+                );
+              }
+              return of(stuff);
+            })
+          );
         }
       }),
       tap(stuff => {
@@ -43,10 +87,22 @@ export class StuffService {
   }
 
   addStuff(stuff: Omit<Stuff, "id">) {
-    return combineLatest([
-      this.db.insertRow("stuff", stuff),
-      this._stuffs.pipe(take(1))
-    ]).pipe(
+    let savePicObs$: Observable<any> = of(stuff.imgUrl);
+
+    if (stuff.imgUrl) {
+      savePicObs$ = from(
+        this.photoService.savePicture(stuff.imgUrl).then(file => {
+          return file.filepath;
+        })
+      );
+    }
+    return savePicObs$.pipe(
+      switchMap(imgUrl =>
+        combineLatest([
+          this.db.insertRow("stuff", { ...stuff, imgUrl }),
+          this._stuffs.pipe(take(1))
+        ])
+      ),
       tap(([id, stuffs]) => {
         const newStuff: Stuff = {
           id,
@@ -58,12 +114,23 @@ export class StuffService {
     );
   }
 
-  updateStuff(id: number, data: Omit<Stuff, "id">) {
-    console.log(data);
-    return combineLatest([
-      this.db.updateRowById("stuff", data, id),
-      this._stuffs.pipe(take(1))
-    ]).pipe(
+  updateStuff(id: number, data: Omit<Stuff, "id">, imgUrl?: string) {
+    let savePicObs$: Observable<any> = of(imgUrl);
+
+    if (imgUrl) {
+      savePicObs$ = from(
+        this.photoService.savePicture(imgUrl).then(file => {
+          return file.filepath;
+        })
+      );
+    }
+    return savePicObs$.pipe(
+      switchMap(_imgUrl =>
+        combineLatest([
+          this.db.updateRowById("stuff", { ...data, imgUrl: _imgUrl }, id),
+          this._stuffs.pipe(take(1))
+        ])
+      ),
       tap(([_, stuffs]) => {
         const newStuffs = [...stuffs];
         const updateStuffIndex = newStuffs.findIndex(stuff => stuff.id === id);

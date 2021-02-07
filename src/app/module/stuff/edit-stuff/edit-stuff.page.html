@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button [defaultHref]="'/stuff/'+stuffId"></ion-back-button>
+      <ion-back-button [defaultHref]="'/stuff/'+editingStuff?.id"></ion-back-button>
     </ion-buttons>
     <ion-title>Edit Stuff</ion-title>
     <ion-buttons slot="primary">
@@ -20,6 +20,7 @@
         <ion-col>
           <app-image-input
             (fileSelected)="onFileSelected($event)"
+            [selectedImage]="editingStuff?.imgUrl"
           ></app-image-input>
         </ion-col>
       </ion-row>

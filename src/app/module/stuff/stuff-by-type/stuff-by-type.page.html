@@ -21,7 +21,7 @@
       [routerLink]="['/stuff', stuff.id]"
     >
       <ion-thumbnail slot="start">
-        <ion-img [src]="stuff.imgUrl" appDefaultImage></ion-img>
+        <ion-img [src]="stuff.imgUrl | safeUrl" appDefaultImage></ion-img>
       </ion-thumbnail>
       <ion-label> {{stuff.name}} </ion-label>
     </ion-item>

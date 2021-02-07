@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from "@angular/core";
+import { Component, OnInit, Output, EventEmitter, Input } from "@angular/core";
 import {
   Plugins,
   CameraResultType,
@@ -17,7 +17,7 @@ import { ActionSheetButton } from "@ionic/core";
 })
 export class ImageInputComponent implements OnInit {
   @Output() fileSelected = new EventEmitter<string>();
-  selectedImage: string = "";
+  @Input() selectedImage: string = "";
 
   constructor(private actionSheetCtrl: ActionSheetController) {}
 
@@ -60,7 +60,7 @@ export class ImageInputComponent implements OnInit {
         buttons.push({
           text: "Remove Photo",
           handler: () => {
-            this.selectedImage = "";
+            this.processImage({ webPath: "", format: "" });
           }
         });
       }
@@ -76,7 +76,6 @@ export class ImageInputComponent implements OnInit {
   }
 
   async processImage(image: CameraPhoto) {
-    console.log(image);
     this.selectedImage = image.webPath;
     this.fileSelected.emit(image.webPath);
   }

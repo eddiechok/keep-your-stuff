@@ -6,13 +6,13 @@ import {
   LocalNotificationPendingList
 } from "@capacitor/core";
 import { subDays } from "date-fns";
-import { map, switchMap, take } from "rxjs/operators";
+import { filter, map, switchMap, take } from "rxjs/operators";
 import { Reminder } from "src/app/module/reminder/reminder.model";
 import { ReminderService } from "src/app/module/reminder/reminder.service";
 import { StuffService } from "src/app/module/stuff/stuff.service";
 import { Router } from "@angular/router";
 import { Stuff } from "src/app/module/stuff/stuff.model";
-import { of } from "rxjs";
+import { combineLatest, of } from "rxjs";
 
 @Injectable({
   providedIn: "root"
@@ -55,9 +55,13 @@ export class NotificationService {
 
       // Subscribe to reminder
       let _reminder: Reminder;
-      this.reminderService.reminder
+      combineLatest([
+        this.reminderService.reminder,
+        this.stuffService.isLoaded$
+      ])
         .pipe(
-          switchMap(reminder => {
+          filter(([_, isLoaded]) => isLoaded), // continue the observable after the stuffs are loaded
+          switchMap(([reminder]) => {
             console.warn(
               "notification service initialize(): subscribe to reminder"
             );

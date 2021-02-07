@@ -108,6 +108,7 @@ export class DbService {
 
   updateRowById(tableName: string, data: Record<string, any>, id: number) {
     const params = Object.keys(data).map(key => `${key} = ?`);
+    console.log(data);
 
     return this.isReady.pipe(
       take(1),

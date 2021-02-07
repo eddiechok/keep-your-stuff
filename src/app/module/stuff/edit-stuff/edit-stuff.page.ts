@@ -39,8 +39,7 @@ export class EditStuffPage implements OnInit, OnDestroy {
     category: "",
     location: ""
   };
-  stuffId: number;
-  private editingStuff: Stuff;
+  editingStuff: Stuff;
   private categories: Category[] = [];
   private locations: Location[] = [];
   private sub: Subscription;
@@ -67,8 +66,8 @@ export class EditStuffPage implements OnInit, OnDestroy {
           this.navCtrl.back();
           throw new Error("no id");
         }
-        this.stuffId = +paramMap.get("id");
-        return this.stuffId;
+        const id = +paramMap.get("id");
+        return id;
       }),
       switchMap(id => {
         return this.stuffService.getStuff(id);
@@ -189,6 +188,7 @@ export class EditStuffPage implements OnInit, OnDestroy {
     this.form.patchValue({
       imgUrl: imagePath
     });
+    this.form.markAsDirty();
   }
 
   onSubmit() {
@@ -198,9 +198,8 @@ export class EditStuffPage implements OnInit, OnDestroy {
     }
 
     // navigate back if user didnt change anything
-    console.log(this.form.dirty);
     if (!this.form.dirty) {
-      this.navCtrl.navigateBack("/stuff/" + this.stuffId);
+      this.navCtrl.navigateBack("/stuff/" + this.editingStuff.id);
       return;
     }
 
@@ -217,8 +216,13 @@ export class EditStuffPage implements OnInit, OnDestroy {
         };
         delete data.category;
         delete data.location;
+
+        // return null if imgUrl didnt change
+        const imgUrl =
+          this.editingStuff.imgUrl !== data.imgUrl ? data.imgUrl : null;
+
         this.stuffService
-          .updateStuff(this.stuffId, data)
+          .updateStuff(this.editingStuff.id, data, imgUrl)
           .pipe(
             switchMap(() => {
               return combineLatest([
@@ -234,7 +238,7 @@ export class EditStuffPage implements OnInit, OnDestroy {
               this.editingStuff.name !== this.form.value.name
             ) {
               this.notificationService.rescheduleNotification({
-                id: this.stuffId,
+                id: this.editingStuff.id,
                 name: this.form.value.name,
                 expiryDate: this.form.value.expiryDate
               });
@@ -246,7 +250,7 @@ export class EditStuffPage implements OnInit, OnDestroy {
               category: "",
               location: ""
             };
-            this.navCtrl.navigateBack("/stuff/" + this.stuffId);
+            this.navCtrl.navigateBack("/stuff/" + this.editingStuff.id);
           });
       });
   }
