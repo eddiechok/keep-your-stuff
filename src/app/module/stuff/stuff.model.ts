@@ -4,6 +4,7 @@ import { Location } from "../location/location.model";
 export type Stuff = {
   id: number;
   name: string;
+  filepath?: string;
   imgUrl?: string;
   desc?: string;
   expiryDate?: string;
@@ -16,6 +17,7 @@ export type StuffWithRelations = {
   name: string;
   category: Category;
   location: Location;
+  filepath?: string;
   imgUrl?: string;
   desc?: string;
   expiryDate?: string;

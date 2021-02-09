@@ -4,6 +4,7 @@ import {
   combineLatest,
   Observable,
   of,
+  ReplaySubject,
   throwError
 } from "rxjs";
 import { map, switchMap, take, tap } from "rxjs/operators";
@@ -14,7 +15,7 @@ import { Location } from "./location.model";
   providedIn: "root"
 })
 export class LocationService {
-  private _locations = new BehaviorSubject<Location[]>([]);
+  private _locations = new ReplaySubject<Location[]>(1);
 
   constructor(private db: DbService) {
     this.loadLocations().subscribe();

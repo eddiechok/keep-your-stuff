@@ -21,7 +21,7 @@
   <app-spinner *ngIf="isLoading"></app-spinner>
   <app-no-record *ngIf="!isLoading && !stuff"></app-no-record>
   <div *ngIf="!isLoading && stuff">
-    <app-image-viewer [imagePath]="stuff.imgUrl"></app-image-viewer>
+    <app-image-viewer [imageUrl]="stuff.imgUrl" [filepath]="stuff.filepath"></app-image-viewer>
     <ion-grid>
       <ion-row>
         <ion-col>

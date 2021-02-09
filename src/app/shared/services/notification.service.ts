@@ -55,13 +55,13 @@ export class NotificationService {
 
       // Subscribe to reminder
       let _reminder: Reminder;
-      combineLatest([
-        this.reminderService.reminder,
-        this.stuffService.isLoaded$
-      ])
+      // combineLatest([
+      this.reminderService.reminder
+        // this.stuffService.isLoaded$
+        // ])
         .pipe(
-          filter(([_, isLoaded]) => isLoaded), // continue the observable after the stuffs are loaded
-          switchMap(([reminder]) => {
+          // filter(([_, isLoaded]) => isLoaded), // continue the observable after the stuffs are loaded
+          switchMap(reminder => {
             console.warn(
               "notification service initialize(): subscribe to reminder"
             );
@@ -77,6 +77,7 @@ export class NotificationService {
             return this.stuffService.stuffs.pipe(take(1));
           }),
           map(stuffs => {
+            console.log("get stuffs");
             return stuffs.filter(
               stuff =>
                 !!stuff.expiryDate && // filter no expiry date

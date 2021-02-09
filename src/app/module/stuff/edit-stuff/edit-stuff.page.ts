@@ -19,6 +19,7 @@ import { LocationService } from "../../location/location.service";
 import { StuffService } from "../stuff.service";
 import { NotificationService } from "src/app/shared/services/notification.service";
 import { Stuff } from "../stuff.model";
+import { CameraPhoto } from "@capacitor/core";
 
 @Component({
   selector: "app-edit-stuff",
@@ -43,6 +44,7 @@ export class EditStuffPage implements OnInit, OnDestroy {
   private categories: Category[] = [];
   private locations: Location[] = [];
   private sub: Subscription;
+  private selectedImage: CameraPhoto;
 
   constructor(
     private fb: FormBuilder,
@@ -184,10 +186,11 @@ export class EditStuffPage implements OnInit, OnDestroy {
     this.openPicker("location", this.locations, selectedLocationIndex);
   }
 
-  onFileSelected(imagePath) {
+  onFileSelected(image) {
     this.form.patchValue({
-      imgUrl: imagePath
+      imgUrl: image.webPath
     });
+    this.selectedImage = image;
     this.form.markAsDirty();
   }
 
@@ -217,12 +220,8 @@ export class EditStuffPage implements OnInit, OnDestroy {
         delete data.category;
         delete data.location;
 
-        // return null if imgUrl didnt change
-        const imgUrl =
-          this.editingStuff.imgUrl !== data.imgUrl ? data.imgUrl : null;
-
         this.stuffService
-          .updateStuff(this.editingStuff.id, data, imgUrl)
+          .updateStuff(this.editingStuff.id, data, this.selectedImage)
           .pipe(
             switchMap(() => {
               return combineLatest([

@@ -15,6 +15,7 @@
 
 <ion-content>
   <app-skeleton-list *ngIf="isLoading"></app-skeleton-list>
+  <app-no-record *ngIf="!isLoading && ((mode === 'category' && categories.length <= 0) || (mode === 'location' && locations.length <= 0)) "></app-no-record>
   <ion-list *ngIf="!isLoading && mode === 'category'">
     <ion-item
       *ngFor="let category of categories"

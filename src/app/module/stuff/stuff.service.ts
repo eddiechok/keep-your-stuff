@@ -1,5 +1,14 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, combineLatest, from, Observable, of } from "rxjs";
+import { CameraPhoto } from "@capacitor/core";
+import {
+  BehaviorSubject,
+  combineLatest,
+  EMPTY,
+  from,
+  Observable,
+  of,
+  ReplaySubject
+} from "rxjs";
 import { map, switchMap, take, takeWhile, tap } from "rxjs/operators";
 import { DbService } from "src/app/shared/services/db.service";
 import { PhotoService } from "src/app/shared/services/photo.service";
@@ -9,8 +18,8 @@ import { Stuff } from "./stuff.model";
   providedIn: "root"
 })
 export class StuffService {
-  private _stuffs = new BehaviorSubject<Stuff[]>([]);
-  private _isLoaded$ = new BehaviorSubject(false);
+  private _stuffs = new ReplaySubject<Stuff[]>(1);
+  // private _isLoaded$ = new BehaviorSubject(false);
 
   constructor(private db: DbService, private photoService: PhotoService) {
     this.loadStuffs().subscribe();
@@ -20,10 +29,10 @@ export class StuffService {
     return this._stuffs.asObservable();
   }
 
-  get isLoaded$() {
-    // destroy the subscriber when the stuff is loaded
-    return this._isLoaded$.pipe(takeWhile(isLoaded => !isLoaded, true));
-  }
+  // get isLoaded$() {
+  //   // destroy the subscriber when the stuff is loaded
+  //   return this._isLoaded$.pipe(takeWhile(isLoaded => !isLoaded, true));
+  // }
 
   loadStuffs() {
     return this.db.getRows("stuff").pipe(
@@ -34,11 +43,12 @@ export class StuffService {
         await Promise.all(
           // map all the stuffs to an array of promise
           stuffs.map(async stuff => {
-            if (stuff.imgUrl) {
-              const filepath = await this.photoService.loadPicture(
-                stuff.imgUrl
+            if (stuff.filepath) {
+              // get imageUrl if the stuff has image filepath
+              const imgUrl = await this.photoService.loadPicture(
+                stuff.filepath
               );
-              stuff.imgUrl = filepath;
+              stuff.imgUrl = imgUrl;
             }
             loadedImageStuffs.push(stuff);
           })
@@ -46,8 +56,9 @@ export class StuffService {
         return loadedImageStuffs;
       }),
       tap(stuffs => {
+        console.log("stuffs loaded");
         this._stuffs.next(stuffs);
-        this._isLoaded$.next(true);
+        // this._isLoaded$.next(true);
       })
     );
   }
@@ -62,10 +73,10 @@ export class StuffService {
           return this.db.getRowById("stuff", id).pipe(
             switchMap((stuff: Stuff) => {
               // load pic from filepath if has filepath
-              if (stuff.imgUrl) {
-                return from(this.photoService.loadPicture(stuff.imgUrl)).pipe(
-                  map(filepath => {
-                    stuff.imgUrl = filepath;
+              if (stuff.filepath) {
+                return from(this.photoService.loadPicture(stuff.filepath)).pipe(
+                  map(imgUrl => {
+                    stuff.imgUrl = imgUrl;
                     return stuff;
                   }),
                   tap(stuff => {
@@ -86,58 +97,83 @@ export class StuffService {
     );
   }
 
-  addStuff(stuff: Omit<Stuff, "id">) {
-    let savePicObs$: Observable<any> = of(stuff.imgUrl);
+  addStuff(stuff: Omit<Stuff, "id">, image: CameraPhoto) {
+    let savePicObs$: Observable<any> = of(null);
+    let filepath: string = null;
 
-    if (stuff.imgUrl) {
+    if (image?.webPath) {
       savePicObs$ = from(
-        this.photoService.savePicture(stuff.imgUrl).then(file => {
-          return file.filepath;
+        // save picture into filesystem and get the filepath
+        this.photoService.savePicture(image).then(file => {
+          filepath = file.filepath;
         })
       );
     }
     return savePicObs$.pipe(
-      switchMap(imgUrl =>
-        combineLatest([
-          this.db.insertRow("stuff", { ...stuff, imgUrl }),
+      switchMap(() => {
+        const addedStuff = { ...stuff, filepath };
+        delete addedStuff.imgUrl; // do not add imgUrl into db
+
+        return combineLatest([
+          this.db.insertRow("stuff", addedStuff),
           this._stuffs.pipe(take(1))
-        ])
-      ),
+        ]);
+      }),
       tap(([id, stuffs]) => {
         const newStuff: Stuff = {
           id,
-          ...stuff
+          ...stuff,
+          filepath
         };
+
         this._stuffs.next(stuffs.concat(newStuff));
       }),
       map(([id, _]) => id)
     );
   }
 
-  updateStuff(id: number, data: Omit<Stuff, "id">, imgUrl?: string) {
-    let savePicObs$: Observable<any> = of(imgUrl);
+  updateStuff(id: number, data: Omit<Stuff, "id">, image?: CameraPhoto) {
+    let savePicObs$: Observable<any> = of(null);
+    let filepath: string = null;
+    const isOldPicChange = !data.imgUrl || image?.webPath;
 
-    if (imgUrl) {
+    if (image?.webPath) {
       savePicObs$ = from(
-        this.photoService.savePicture(imgUrl).then(file => {
-          return file.filepath;
+        this.photoService.savePicture(image).then(file => {
+          filepath = file.filepath;
         })
       );
     }
+
     return savePicObs$.pipe(
-      switchMap(_imgUrl =>
-        combineLatest([
-          this.db.updateRowById("stuff", { ...data, imgUrl: _imgUrl }, id),
+      switchMap(() => {
+        const updatedStuff = { ...data };
+        // if the imgUrl is empty or user has update new image, else dont update filepath
+        if (isOldPicChange) {
+          updatedStuff.filepath = filepath;
+        }
+        delete updatedStuff.imgUrl; // do not add imgUrl into db
+
+        return combineLatest([
+          this.db.updateRowById("stuff", updatedStuff, id),
           this._stuffs.pipe(take(1))
-        ])
-      ),
-      tap(([_, stuffs]) => {
+        ]);
+      }),
+      map(([_, stuffs]) => {
         const newStuffs = [...stuffs];
         const updateStuffIndex = newStuffs.findIndex(stuff => stuff.id === id);
+        const oldFilepath = newStuffs[updateStuffIndex].filepath;
+
         newStuffs[updateStuffIndex] = {
           ...newStuffs[updateStuffIndex],
-          ...data
+          ...data,
+          filepath: isOldPicChange ? filepath : oldFilepath
         };
+
+        if (oldFilepath && isOldPicChange) {
+          //remove old picture in filesystem
+          this.photoService.removePicture(oldFilepath);
+        }
 
         this._stuffs.next(newStuffs);
       })
@@ -149,8 +185,15 @@ export class StuffService {
       this.db.deleteRowById("stuff", id),
       this._stuffs.pipe(take(1))
     ]).pipe(
-      tap(([_, stuffs]) => {
+      map(([_, stuffs]) => {
         this._stuffs.next(stuffs.filter(stuff => stuff.id !== id));
+        return stuffs.find(stuff => stuff.id !== id);
+      }),
+      tap(deletedStuff => {
+        if (deletedStuff.filepath) {
+          //remove picture in filesystem
+          this.photoService.removePicture(deletedStuff.filepath);
+        }
       })
     );
   }

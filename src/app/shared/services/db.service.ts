@@ -7,9 +7,7 @@ import { map, take } from "rxjs/operators";
 import initSqlJs from "sql.js";
 import { SqlJs } from "sql.js/module";
 
-@Injectable({
-  providedIn: "root"
-})
+@Injectable()
 export class DbService {
   private db: SqlJs.Database;
   private isReady = new ReplaySubject();
@@ -108,7 +106,6 @@ export class DbService {
 
   updateRowById(tableName: string, data: Record<string, any>, id: number) {
     const params = Object.keys(data).map(key => `${key} = ?`);
-    console.log(data);
 
     return this.isReady.pipe(
       take(1),

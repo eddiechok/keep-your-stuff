@@ -1,12 +1,6 @@
 import { Injectable } from "@angular/core";
-import {
-  BehaviorSubject,
-  combineLatest,
-  Observable,
-  of,
-  throwError
-} from "rxjs";
-import { delay, map, switchMap, take, tap } from "rxjs/operators";
+import { combineLatest, Observable, of, ReplaySubject, throwError } from "rxjs";
+import { map, switchMap, take, tap } from "rxjs/operators";
 import { DbService } from "src/app/shared/services/db.service";
 import { Category } from "./category.model";
 
@@ -14,7 +8,7 @@ import { Category } from "./category.model";
   providedIn: "root"
 })
 export class CategoryService {
-  private _categories = new BehaviorSubject<Category[]>([]);
+  private _categories = new ReplaySubject<Category[]>(1);
 
   constructor(private db: DbService) {
     this.loadCategories().subscribe();
@@ -32,6 +26,7 @@ export class CategoryService {
 
     return this.db.getRowsBySql(sql).pipe(
       tap(categories => {
+        console.log(categories);
         this._categories.next(categories);
       })
     );

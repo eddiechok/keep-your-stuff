@@ -16,7 +16,7 @@ import { ActionSheetButton } from "@ionic/core";
   styleUrls: ["./image-input.component.scss"]
 })
 export class ImageInputComponent implements OnInit {
-  @Output() fileSelected = new EventEmitter<string>();
+  @Output() fileSelected = new EventEmitter<CameraPhoto>();
   @Input() selectedImage: string = "";
 
   constructor(private actionSheetCtrl: ActionSheetController) {}
@@ -77,6 +77,6 @@ export class ImageInputComponent implements OnInit {
 
   async processImage(image: CameraPhoto) {
     this.selectedImage = image.webPath;
-    this.fileSelected.emit(image.webPath);
+    this.fileSelected.emit(image);
   }
 }

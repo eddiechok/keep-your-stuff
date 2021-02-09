@@ -18,6 +18,7 @@ import { LocationService } from "../../location/location.service";
 import { StuffService } from "../stuff.service";
 import { NotificationService } from "src/app/shared/services/notification.service";
 import { map, switchMap } from "rxjs/operators";
+import { CameraPhoto } from "@capacitor/core";
 
 @Component({
   selector: "app-add-stuff",
@@ -43,6 +44,7 @@ export class AddStuffPage implements OnInit, OnDestroy {
   private categories: Category[] = [];
   private locations: Location[] = [];
   private sub: Subscription;
+  private selectedImage: CameraPhoto;
 
   constructor(
     private fb: FormBuilder,
@@ -170,10 +172,11 @@ export class AddStuffPage implements OnInit, OnDestroy {
     this.openPicker("location", this.locations, selectedLocationIndex);
   }
 
-  onFileSelected(imagePath) {
+  onFileSelected(image) {
     this.form.patchValue({
-      imgUrl: imagePath
+      imgUrl: image.webPath
     });
+    this.selectedImage = image;
   }
 
   onSubmit() {
@@ -195,7 +198,7 @@ export class AddStuffPage implements OnInit, OnDestroy {
         delete data.category;
         delete data.location;
         this.stuffService
-          .addStuff(data)
+          .addStuff(data, this.selectedImage)
           .pipe(
             switchMap(newId => {
               return combineLatest([

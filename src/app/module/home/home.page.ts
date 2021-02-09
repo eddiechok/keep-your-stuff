@@ -37,14 +37,17 @@ export class HomePage implements OnInit, OnDestroy {
     if (value === "category" && !this.categorySub) {
       this.isLoading = true;
       let _stuffs: Stuff[] = [];
+      console.log("segment");
       this.categorySub = this.stuffService.stuffs
         .pipe(
           switchMap(stuffs => {
+            console.log(stuffs);
             _stuffs = [...stuffs];
             return this.categoryService.categories;
           })
         )
         .subscribe(categories => {
+          console.log(categories);
           this.categories = categories;
           this.isLoading = false;
         });
