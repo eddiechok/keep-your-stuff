@@ -51,6 +51,11 @@
                 "output": "./svg"
               },
               {
+                "glob": "**/*.svg",
+                "input": "src/assets/icon",
+                "output": "./svg"
+              },
+              {
                 "glob": "**/sql-wasm.wasm",
                 "input": "node_modules/sql.js/dist",
                 "output": "./"

@@ -22,9 +22,10 @@ export class PhotoService {
     // Write the file to the data directory
     const fileName = new Date().getTime() + ".jpeg";
     const savedFile = await Filesystem.writeFile({
-      path: fileName,
+      path: `Pictures/KeepYourStuff/${fileName}`,
       data: base64Data,
-      directory: FilesystemDirectory.Data
+      directory: FilesystemDirectory.ExternalStorage,
+      recursive: true
     });
 
     if (this.platform.is("hybrid")) {
@@ -49,7 +50,7 @@ export class PhotoService {
         // Read each saved photo's data from the Filesystem
         const readFile = await Filesystem.readFile({
           path: filepath,
-          directory: FilesystemDirectory.Data
+          directory: FilesystemDirectory.ExternalStorage
         });
 
         // Web platform only: Load the photo as base64 data

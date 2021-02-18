@@ -18,7 +18,7 @@ export class LocationService {
   private _locations = new ReplaySubject<Location[]>(1);
 
   constructor(private db: DbService) {
-    this.loadLocations().subscribe();
+    this.db.startDb$.pipe(switchMap(() => this.loadLocations())).subscribe();
   }
 
   get locations() {

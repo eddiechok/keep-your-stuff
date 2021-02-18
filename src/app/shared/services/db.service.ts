@@ -3,14 +3,16 @@ import { Injectable } from "@angular/core";
 import { Platform } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import { ReplaySubject } from "rxjs";
-import { map, take } from "rxjs/operators";
+import { map, switchMap, take, tap } from "rxjs/operators";
 import initSqlJs from "sql.js";
 import { SqlJs } from "sql.js/module";
 
 @Injectable()
 export class DbService {
   private db: SqlJs.Database;
-  private isReady = new ReplaySubject();
+  private isReady = new ReplaySubject(1);
+  private SQL: SqlJs.SqlJsStatic;
+  private _startDb$ = new ReplaySubject(1);
 
   constructor(
     private platform: Platform,
@@ -20,8 +22,13 @@ export class DbService {
     this.platform.ready().then(async () => {
       this.createDb().then(() => {
         this.isReady.next();
+        this._startDb$.next();
       });
     });
+  }
+
+  get startDb$() {
+    return this._startDb$.asObservable();
   }
 
   async createDb(): Promise<void> {
@@ -30,7 +37,7 @@ export class DbService {
       initSqlJs(),
       this.storage.get("db")
     ]);
-
+    this.SQL = SQL;
     if (dbData) {
       this.db = new SQL.Database(dbData);
     } else {
@@ -158,6 +165,25 @@ export class DbService {
         const result = stmt.getAsObject();
         stmt.free();
         return result;
+      })
+    );
+  }
+
+  export() {
+    return this.isReady.pipe(
+      take(1),
+      map(() => this.db.export())
+    );
+  }
+
+  import(dbData) {
+    return this.isReady.pipe(
+      take(1),
+      switchMap(() => {
+        const parseData = JSON.parse("[" + dbData + "]");
+        this.db = new this.SQL.Database(parseData);
+        this._startDb$.next();
+        return this.storage.set("db", parseData);
       })
     );
   }

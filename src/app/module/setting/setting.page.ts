@@ -25,6 +25,12 @@ export class SettingPage implements OnInit {
       name: "Exipration Reminder",
       icon: "notifications-outline",
       routerLink: "/reminder"
+    },
+    {
+      id: 4,
+      name: "Backup & Restore",
+      icon: "server-outline",
+      routerLink: "/backup"
     }
   ];
   isDarkMode = false;

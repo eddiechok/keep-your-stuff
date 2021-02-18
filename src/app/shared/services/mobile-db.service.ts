@@ -9,7 +9,8 @@ import { switchMap, take } from "rxjs/operators";
 @Injectable()
 export class MobileDbService {
   private db: SQLiteObject;
-  private isReady = new ReplaySubject();
+  private isReady = new ReplaySubject(1);
+  private _startDb$ = new ReplaySubject(1);
 
   constructor(
     private platform: Platform,
@@ -20,8 +21,13 @@ export class MobileDbService {
     this.platform.ready().then(async () => {
       this.createDb().then(() => {
         this.isReady.next();
+        this._startDb$.next();
       });
     });
+  }
+
+  get startDb$() {
+    return this._startDb$.asObservable();
   }
 
   async createDb(): Promise<void> {
@@ -151,6 +157,21 @@ export class MobileDbService {
           return data.rows.item(0);
         });
       })
+    );
+  }
+
+  export() {
+    return this.sqlitePorter.exportDbToSql(this.db);
+  }
+
+  import(dbData) {
+    console.log(dbData);
+    return this.isReady.pipe(
+      switchMap(() =>
+        this.sqlitePorter.importSqlToDb(this.db, dbData).then(() => {
+          this._startDb$.next();
+        })
+      )
     );
   }
 }

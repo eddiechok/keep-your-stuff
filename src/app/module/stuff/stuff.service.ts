@@ -1,15 +1,7 @@
 import { Injectable } from "@angular/core";
 import { CameraPhoto } from "@capacitor/core";
-import {
-  BehaviorSubject,
-  combineLatest,
-  EMPTY,
-  from,
-  Observable,
-  of,
-  ReplaySubject
-} from "rxjs";
-import { map, switchMap, take, takeWhile, tap } from "rxjs/operators";
+import { combineLatest, from, Observable, of, ReplaySubject } from "rxjs";
+import { map, switchMap, take, tap } from "rxjs/operators";
 import { DbService } from "src/app/shared/services/db.service";
 import { PhotoService } from "src/app/shared/services/photo.service";
 import { Stuff } from "./stuff.model";
@@ -22,7 +14,7 @@ export class StuffService {
   // private _isLoaded$ = new BehaviorSubject(false);
 
   constructor(private db: DbService, private photoService: PhotoService) {
-    this.loadStuffs().subscribe();
+    this.db.startDb$.pipe(switchMap(() => this.loadStuffs())).subscribe();
   }
 
   get stuffs() {
@@ -187,10 +179,10 @@ export class StuffService {
     ]).pipe(
       map(([_, stuffs]) => {
         this._stuffs.next(stuffs.filter(stuff => stuff.id !== id));
-        return stuffs.find(stuff => stuff.id !== id);
+        return stuffs.find(stuff => stuff.id === id);
       }),
       tap(deletedStuff => {
-        if (deletedStuff.filepath) {
+        if (deletedStuff?.filepath) {
           //remove picture in filesystem
           this.photoService.removePicture(deletedStuff.filepath);
         }

@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/setting"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Backup & Restore</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="onSignOut()">
+        <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item>
+      <ion-label>
+        Google Account
+        <p>{{email}}</p>
+      </ion-label>
+    </ion-item>
+    <ion-item button (click)="export()">
+      <ion-label> Backup data </ion-label>
+    </ion-item>
+    <ion-item button (click)="import()">
+      <ion-label> Restore data </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

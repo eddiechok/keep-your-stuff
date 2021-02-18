@@ -22,8 +22,16 @@ const routes: Routes = [
     loadChildren: () => import("./tabs/tabs.module").then(m => m.TabsPageModule)
   },
   {
-    path: 'reminder',
-    loadChildren: () => import('./module/reminder/reminder.module').then( m => m.ReminderPageModule)
+    path: "reminder",
+    loadChildren: () =>
+      import("./module/reminder/reminder.module").then(
+        m => m.ReminderPageModule
+      )
+  },
+  {
+    path: "backup",
+    loadChildren: () =>
+      import("./module/backup/backup.module").then(m => m.BackupPageModule)
   }
 ];
 @NgModule({

@@ -11,7 +11,7 @@ export class CategoryService {
   private _categories = new ReplaySubject<Category[]>(1);
 
   constructor(private db: DbService) {
-    this.loadCategories().subscribe();
+    this.db.startDb$.pipe(switchMap(() => this.loadCategories())).subscribe();
   }
 
   get categories() {

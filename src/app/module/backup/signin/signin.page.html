@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/setting"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Google Sign In</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="container">
+    <div class="logo-container">
+      <ion-img src="../../../../assets/images/general/drive-logo.png"></ion-img>
+      <ion-label class="ion-padding">
+        <h2>Keep Your Stuff</h2>
+        <p>
+          Backup or restore your data by syncing with your Google Drive account
+        </p>
+      </ion-label>
+    </div>
+    <ion-button class="ion-margin" (click)="onSignIn()">
+      <ion-icon slot="start" name="google"></ion-icon>
+      <div class="button-text">Sign In with Google</div>
+    </ion-button>
+  </div>
+</ion-content>

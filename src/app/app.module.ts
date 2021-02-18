@@ -2,17 +2,16 @@ import { HttpClient, HttpClientModule } from "@angular/common/http";
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { RouteReuseStrategy } from "@angular/router";
+import { GooglePlus } from "@ionic-native/google-plus/ngx";
 import { PhotoViewer } from "@ionic-native/photo-viewer/ngx";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 import { SQLitePorter } from "@ionic-native/sqlite-porter/ngx";
 import { SQLite } from "@ionic-native/sqlite/ngx";
 import { StatusBar } from "@ionic-native/status-bar/ngx";
 import { IonicModule, IonicRouteStrategy, Platform } from "@ionic/angular";
+import { IonicStorageModule, Storage } from "@ionic/storage";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
-import { SQLiteMock } from "./db/sqlite-mock";
-import { SqlitePorterMock } from "./db/sqlite-porter-mock";
-import { IonicStorageModule, Storage } from "@ionic/storage";
 import { DbService } from "./shared/services/db.service";
 import { MobileDbService } from "./shared/services/mobile-db.service";
 
@@ -32,6 +31,7 @@ import { MobileDbService } from "./shared/services/mobile-db.service";
     PhotoViewer,
     SQLitePorter,
     SQLite,
+    GooglePlus,
     // {provide: SQLitePorter, deps: [Platform], useFactory: (platform: Platform) => platform.is("cordova") ? new SQLitePorter() : new SqlitePorterMock()},
     // {provide: SQLite, deps: [Platform], useFactory: (platform: Platform) => platform.is("cordova") ? new SQLite() : new SQLiteMock()},
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
