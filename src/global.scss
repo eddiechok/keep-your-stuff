@@ -25,6 +25,25 @@
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
 
+// add Poppins Fonts
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
+
+// custom mixins
+@mixin glassy-effect {
+  --background: rgba(71, 71, 71, 0.102);
+  box-shadow: inset 22px -22px 22px rgba(54, 54, 54, 0.1),
+    inset -22px 22px 22px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+}
+
+html {
+  --ion-font-family: "Poppins", "Roboto", "Helvetica Neue", sans-serif;
+}
+
+body {
+  background: var(--body-bg);
+}
+
 .ion-text-danger {
   color: var(--ion-color-danger) !important;
 }
@@ -35,4 +54,151 @@
   font-size: 14px;
   padding-top: 7px;
   color: var(--ion-color-danger);
+}
+
+ion-tab-bar {
+  --border: none;
+  box-shadow: var(--primary-outer-effect);
+  padding: 16px;
+  justify-content: space-evenly;
+
+  ion-tab-button {
+    width: 60px;
+    height: 60px;
+    --background: var(--primary-bg);
+    box-shadow: var(--primary-outer-effect);
+    flex: unset;
+    border-radius: var(--border-radius-1);
+    --ripple-color: transparent;
+
+    &.tab-selected,
+    &.ion-activated {
+      box-shadow: var(--primary-inner-effect);
+    }
+  }
+}
+
+ion-fab-button.ion-color-primary {
+  --ion-color-base: var(--primary-gradient) !important;
+}
+
+ion-segment {
+  background: var(--primary-bg);
+  box-shadow: var(--primary-outer-effect);
+  border-radius: var(--border-radius-2);
+  margin: 8px 20px 0 20px;
+  width: auto;
+
+  ion-segment-button {
+    &.segment-button-checked {
+      box-shadow: var(--primary-inner-effect);
+      &:first-child {
+        border-radius: var(--border-radius-2) 0 0 var(--border-radius-2);
+      }
+      &:last-child {
+        border-radius: 0 var(--border-radius-2) var(--border-radius-2) 0;
+      }
+      &::part(indicator) {
+        display: none;
+      }
+    }
+  }
+}
+
+.header-md::after {
+  display: none;
+}
+
+ion-item:not(.item-input):not(.item-datetime) {
+  --padding-top: 4px;
+  --padding-bottom: 4px;
+  &.ion-activated {
+    box-shadow: var(--primary-inner-effect);
+  }
+}
+
+.center-svg {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  & > *:first-child {
+    width: 60%;
+    max-width: 300px;
+    color: var(--ion-color-primary);
+
+    svg {
+      width: 100%;
+      height: auto;
+    }
+  }
+}
+
+ion-searchbar {
+  --box-shadow: var(--primary-inner-effect) !important;
+  --border-radius: var(--border-radius-1) !important;
+}
+
+ion-thumbnail > ion-img {
+  border-radius: var(--border-radius-1);
+}
+
+ion-item.item-input,
+ion-item.item-datetime {
+  border-radius: var(--border-radius-1);
+  background: var(--primary-bg);
+  box-shadow: var(--primary-inner-effect);
+  --border-color: transparent;
+  ion-input.sc-ion-input-md-h {
+    --padding-top: 4px;
+    // --padding-bottom: 4px;
+  }
+  ion-label.label-floating {
+    transform: translateY(70%);
+  }
+  &.item-has-value ion-label {
+    color: var(--secondary-text);
+  }
+
+  ion-datetime {
+    --padding-top: 4px;
+    --padding-bottom: 8px;
+  }
+}
+
+ion-button {
+  &.icon-button {
+    --border-radius: var(--border-radius-1);
+    --box-shadow: var(--primary-outer-effect);
+    --background: var(--primary-bg);
+    --color: var(--button-text);
+  }
+  &.ion-activated {
+    --box-shadow: var(--primary-inner-effect);
+  }
+}
+
+.action-sheet-group {
+  &:not(.action-sheet-group-cancel) {
+    @include glassy-effect();
+  }
+  &.action-sheet-group-cancel {
+    background: var(--primary-bg);
+  }
+}
+
+ion-picker {
+  .picker-wrapper {
+    @include glassy-effect();
+  }
+  --border-width: 0 !important;
+}
+
+ion-alert {
+  .alert-wrapper.ion-overlay-wrapper {
+    @include glassy-effect();
+    border-radius: var(--border-radius-1);
+  }
 }

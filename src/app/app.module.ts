@@ -20,7 +20,9 @@ import { MobileDbService } from "./shared/services/mobile-db.service";
   entryComponents: [],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(),
+    IonicModule.forRoot({
+      rippleEffect: false
+    }),
     AppRoutingModule,
     HttpClientModule,
     IonicStorageModule.forRoot()

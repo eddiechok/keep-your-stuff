@@ -2,25 +2,26 @@
   <ion-toolbar>
     <ion-title>Keep My Stuff</ion-title>
   </ion-toolbar>
-  <ion-toolbar>
-    <ion-segment
-      [value]="mode"
-      (ionChange)="onSegmentChange($event.detail.value)"
-    >
-      <ion-segment-button value="category"> Category </ion-segment-button>
-      <ion-segment-button value="location"> Location </ion-segment-button>
-    </ion-segment>
-  </ion-toolbar>
+  <ion-segment
+    [value]="mode"
+    (ionChange)="onSegmentChange($event.detail.value)"
+  >
+    <ion-segment-button value="category"> Category </ion-segment-button>
+    <ion-segment-button value="location"> Location </ion-segment-button>
+  </ion-segment>
 </ion-header>
 
 <ion-content>
   <app-skeleton-list *ngIf="isLoading"></app-skeleton-list>
-  <app-no-record *ngIf="!isLoading && ((mode === 'category' && categories.length <= 0) || (mode === 'location' && locations.length <= 0)) "></app-no-record>
-  <ion-list *ngIf="!isLoading && mode === 'category'">
+  <app-no-record
+    *ngIf="!isLoading && ((mode === 'category' && categories.length <= 0) || (mode === 'location' && locations.length <= 0)) "
+  ></app-no-record>
+  <ion-list *ngIf="!isLoading && mode === 'category'" lines="none">
     <ion-item
       *ngFor="let category of categories"
       [routerLink]="['/stuff', 'by', 'category', category.id]"
       button
+      detail
     >
       <ion-icon slot="start" [name]="category.icon" [color]="'primary'">
       </ion-icon>
@@ -30,12 +31,14 @@
       </ion-label>
     </ion-item>
   </ion-list>
-  <ion-list *ngIf="!isLoading && mode === 'location'">
+  <ion-list *ngIf="!isLoading && mode === 'location'" lines="none">
     <ion-item
       *ngFor="let location of locations"
       [routerLink]="['/stuff', 'by', 'location', location.id]"
+      button
+      detail
     >
-      <ion-icon slot="start" name="location" [color]="location.color">
+      <ion-icon slot="start" name="location-outline" [color]="location.color">
       </ion-icon>
       <ion-label>
         <h2>{{location.name}}</h2>

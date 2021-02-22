@@ -4,6 +4,7 @@
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
+  border-radius: var(--border-radius-1);
 }
 
 .upload {
@@ -16,9 +17,11 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: var(--ion-color-step-50);
   padding: 16px;
-  color: var(--ion-color-step-500);
+  color: var(--ion-color-step-600);
+  border-radius: var(--border-radius-1);
+  background-color: var(--primary-bg);
+  box-shadow: var(--primary-inner-effect);
 }
 
 app-add-image-svg {

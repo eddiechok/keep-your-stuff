@@ -6,7 +6,7 @@ import { DatetimeWrapperComponent } from "./components/datetime-wrapper/datetime
 import { ImageInputComponent } from "./components/image-input/image-input.component";
 import { ImageViewerComponent } from "./components/image-viewer/image-viewer.component";
 import { NoRecordComponent } from "./components/no-record/no-record.component";
-import { SearchSvgComponent } from "./components/search-svg/search-svg.component";
+import { SearchSvgComponent } from "./svg/search-svg/search-svg.component";
 import { SkeletonListComponent } from "./components/skeleton/skeleton-list/skeleton-list.component";
 import { SpinnerComponent } from "./components/spinner/spinner.component";
 import { DefaultImageDirective } from "./directives/default-image.directive";
@@ -22,7 +22,6 @@ import { SafeUrlPipe } from "./pipes/safeUrl.pipe";
     SpinnerComponent,
     SkeletonListComponent,
     NoRecordComponent,
-    SearchSvgComponent,
     ImageInputComponent,
     ImageViewerComponent,
     DefaultImageDirective,
@@ -44,7 +43,6 @@ import { SafeUrlPipe } from "./pipes/safeUrl.pipe";
     SpinnerComponent,
     SkeletonListComponent,
     NoRecordComponent,
-    SearchSvgComponent,
     ImageInputComponent,
     ImageViewerComponent,
     DefaultImageDirective,
@@ -53,7 +51,8 @@ import { SafeUrlPipe } from "./pipes/safeUrl.pipe";
     ControlErrorsDirective,
     FormSubmitDirective,
     ControlErrorContainerDirective,
-    SafeUrlPipe
+    SafeUrlPipe,
+    SvgModule
   ]
 })
 export class SharedModule {}

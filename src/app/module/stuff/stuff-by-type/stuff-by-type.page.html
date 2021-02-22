@@ -18,6 +18,8 @@
     <ion-item
       *virtualItem="let stuff"
       button
+      detail
+      lines="none"
       [routerLink]="['/stuff', stuff.id]"
     >
       <ion-thumbnail slot="start">

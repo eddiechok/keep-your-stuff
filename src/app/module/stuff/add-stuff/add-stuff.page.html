@@ -33,9 +33,41 @@
       </ion-row>
       <ion-row>
         <ion-col>
+          <div appControlErrorContainer class="input-group">
+            <ion-item (click)="onSelectCategory()">
+              <ion-label position="floating"> Category </ion-label>
+              <ion-input type="hidden" formControlName="category"></ion-input>
+              <ion-input [value]="selected.category" readonly></ion-input>
+            </ion-item>
+            <ion-button class="icon-button" (click)="onSelectCategory()">
+              <ion-icon name="list-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <div appControlErrorContainer class="input-group">
+            <ion-item (click)="onSelectLocation()">
+              <ion-label position="floating"> Location </ion-label>
+              <ion-input type="hidden" formControlName="location"></ion-input>
+              <ion-input [value]="selected.location" readonly></ion-input>
+            </ion-item>
+            <ion-button class="icon-button" (click)="onSelectLocation()">
+              <ion-icon name="location-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
           <ion-item>
             <ion-label position="floating">Description</ion-label>
-            <ion-input formControlName="desc" clearInput></ion-input>
+            <ion-textarea
+              autoGrow
+              autocapitalize
+              formControlName="desc"
+            ></ion-textarea>
           </ion-item>
         </ion-col>
       </ion-row>
@@ -65,34 +97,6 @@
           </ion-item>
         </ion-col>
       </ion-row> -->
-      <ion-row>
-        <ion-col>
-          <div appControlErrorContainer class="input-group">
-            <ion-item (click)="onSelectCategory()">
-              <ion-label position="floating"> Category </ion-label>
-              <ion-input type="hidden" formControlName="category"></ion-input>
-              <ion-input [value]="selected.category" readonly></ion-input>
-            </ion-item>
-            <ion-button (click)="onSelectCategory()">
-              <ion-icon name="list-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-          </div>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col>
-          <div appControlErrorContainer class="input-group">
-            <ion-item (click)="onSelectLocation()">
-              <ion-label position="floating"> Location </ion-label>
-              <ion-input type="hidden" formControlName="location"></ion-input>
-              <ion-input [value]="selected.location" readonly></ion-input>
-            </ion-item>
-            <ion-button (click)="onSelectLocation()">
-              <ion-icon name="location-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-          </div>
-        </ion-col>
-      </ion-row>
     </ion-grid>
   </form>
 </ion-content>
