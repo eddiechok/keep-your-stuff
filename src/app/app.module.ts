@@ -1,5 +1,5 @@
 import { HttpClient, HttpClientModule } from "@angular/common/http";
-import { NgModule } from "@angular/core";
+import { InjectionToken, NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { RouteReuseStrategy } from "@angular/router";
 import { GooglePlus } from "@ionic-native/google-plus/ngx";
@@ -8,10 +8,16 @@ import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 import { SQLitePorter } from "@ionic-native/sqlite-porter/ngx";
 import { SQLite } from "@ionic-native/sqlite/ngx";
 import { StatusBar } from "@ionic-native/status-bar/ngx";
-import { IonicModule, IonicRouteStrategy, Platform } from "@ionic/angular";
+import {
+  AlertController,
+  IonicModule,
+  IonicRouteStrategy,
+  Platform
+} from "@ionic/angular";
 import { IonicStorageModule, Storage } from "@ionic/storage";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
+import { CustomAlertController } from "./shared/controllers/custom-alert.controller";
 import { DbService } from "./shared/services/db.service";
 import { MobileDbService } from "./shared/services/mobile-db.service";
 
@@ -21,7 +27,10 @@ import { MobileDbService } from "./shared/services/mobile-db.service";
   imports: [
     BrowserModule,
     IonicModule.forRoot({
-      rippleEffect: false
+      rippleEffect: false,
+      mode: "ios",
+      backButtonIcon: "arrow-back",
+      backButtonText: ""
     }),
     AppRoutingModule,
     HttpClientModule,
@@ -53,6 +62,10 @@ import { MobileDbService } from "./shared/services/mobile-db.service";
           return new DbService(platform, http, storage);
         }
       }
+    },
+    {
+      provide: AlertController,
+      useClass: CustomAlertController
     }
   ],
   bootstrap: [AppComponent]

@@ -1,5 +1,13 @@
-.selected-icon {
-  --border-color: var(--ion-color-primary);
-  --border-width: 1px;
-  --border-style: solid;
+.outer {
+  width: 55px;
+  height: 55px;
+  color: var(--secondary-text);
+  --padding-start: 0;
+  --padding-end: 0;
+
+  &.selected-icon {
+    color: var(--button-text-selected);
+    --background: var(--button-bg-selected);
+    --box-shadow: var(--button-inner);
+  }
 }

@@ -1,19 +1,21 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
 
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from "@ionic/angular";
 
-import { ReminderPageRoutingModule } from './reminder-routing.module';
+import { ReminderPageRoutingModule } from "./reminder-routing.module";
 
-import { ReminderPage } from './reminder.page';
+import { ReminderPage } from "./reminder.page";
+import { SharedModule } from "src/app/shared/shared.module";
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ReminderPageRoutingModule
+    ReminderPageRoutingModule,
+    SharedModule
   ],
   declarations: [ReminderPage]
 })

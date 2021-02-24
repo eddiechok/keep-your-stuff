@@ -51,6 +51,16 @@ export class LocationListPage implements OnInit, OnDestroy {
       });
   }
 
+  onHelperClick(slidingItem: IonItemSliding) {
+    slidingItem.getSlidingRatio().then(value => {
+      if (value > 0) {
+        slidingItem.close();
+      } else {
+        slidingItem.open("end");
+      }
+    });
+  }
+
   onDelete(id: number, slidingItem: IonItemSliding) {
     slidingItem.close();
     this.alertCtrl

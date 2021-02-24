@@ -16,12 +16,12 @@ export class AddLocationModalComponent implements OnInit {
   colors = [
     "primary",
     "secondary",
-    "tertiary",
     "success",
     "warning",
     "danger",
-    "medium",
-    "dark"
+    "purple",
+    "pink",
+    "orange"
   ];
 
   constructor(

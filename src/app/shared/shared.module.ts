@@ -16,6 +16,7 @@ import { FormSubmitDirective } from "./directives/form-submit.directive";
 import { ControlErrorComponent } from "./components/control-error/control-error.component";
 import { ControlErrorContainerDirective } from "./directives/control-error-container.directive";
 import { SafeUrlPipe } from "./pipes/safeUrl.pipe";
+import { ModeDirective } from './directives/mode.directive';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { SafeUrlPipe } from "./pipes/safeUrl.pipe";
     FormSubmitDirective,
     ControlErrorComponent,
     ControlErrorContainerDirective,
-    SafeUrlPipe
+    SafeUrlPipe,
+    ModeDirective
   ],
   imports: [
     CommonModule,
@@ -52,7 +54,8 @@ import { SafeUrlPipe } from "./pipes/safeUrl.pipe";
     FormSubmitDirective,
     ControlErrorContainerDirective,
     SafeUrlPipe,
-    SvgModule
+    SvgModule,
+    ModeDirective
   ]
 })
 export class SharedModule {}

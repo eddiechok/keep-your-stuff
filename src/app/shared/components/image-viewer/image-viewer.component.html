@@ -1,10 +1,11 @@
-<div
-  class="upload-container"
-  [style.background-image]="imageUrl && 'url(' + imageUrl + ')'"
-  (click)="onClick()"
->
+<div class="upload-container" (click)="onClick()">
   <div class="upload" *ngIf="!imageUrl">
     <ion-icon name="image-outline"></ion-icon>
     <ion-label> No photo available </ion-label>
   </div>
+  <div
+    class="with-photo"
+    *ngIf="imageUrl"
+    [style.background-image]="imageUrl && 'url(' + imageUrl + ')'"
+  ></div>
 </div>

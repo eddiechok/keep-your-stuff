@@ -1,12 +1,17 @@
-<ion-header>
+<ion-header appMode>
   <ion-toolbar>
     <ion-title>Settings</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-item *ngFor="let menu of menus" button [routerLink]="menu.routerLink">
+  <ion-list lines="none">
+    <ion-item
+      *ngFor="let menu of menus"
+      button
+      detail
+      [routerLink]="menu.routerLink"
+    >
       <ion-icon slot="start" [name]="menu.icon" color="primary"></ion-icon>
       <ion-label> {{menu.name}} </ion-label>
     </ion-item>
@@ -14,6 +19,7 @@
       <ion-icon name="moon-outline" slot="start" color="primary"></ion-icon>
       <ion-label>Dark Mode</ion-label>
       <ion-toggle
+        mode="ios"
         slot="end"
         color="primary"
         [(ngModel)]="isDarkMode"

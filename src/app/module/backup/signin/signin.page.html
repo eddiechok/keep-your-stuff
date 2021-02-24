@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header appMode>
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/setting"></ion-back-button>
@@ -18,7 +18,7 @@
         </p>
       </ion-label>
     </div>
-    <ion-button class="ion-margin" (click)="onSignIn()">
+    <ion-button class="ion-margin outer" shape="round" (click)="onSignIn()">
       <ion-icon slot="start" name="google"></ion-icon>
       <div class="button-text">Sign In with Google</div>
     </ion-button>

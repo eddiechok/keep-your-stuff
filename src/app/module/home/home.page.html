@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header appMode>
   <ion-toolbar>
     <ion-title>Keep My Stuff</ion-title>
   </ion-toolbar>
@@ -26,7 +26,7 @@
       <ion-icon slot="start" [name]="category.icon" [color]="'primary'">
       </ion-icon>
       <ion-label>
-        <h2>{{category.name}}</h2>
+        {{category.name}}
         <p>Stuff: {{category.stuffs}}</p>
       </ion-label>
     </ion-item>
@@ -41,7 +41,7 @@
       <ion-icon slot="start" name="location-outline" [color]="location.color">
       </ion-icon>
       <ion-label>
-        <h2>{{location.name}}</h2>
+        {{location.name}}
         <p>Stuff: {{location.stuffs}}</p>
       </ion-label>
     </ion-item>

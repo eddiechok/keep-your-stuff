@@ -124,6 +124,7 @@ export class EditStuffPage implements OnInit, OnDestroy {
     });
 
     const picker = await this.pickerCtrl.create({
+      mode: "ios",
       columns: [
         {
           name: name,

@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header appMode>
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/setting"></ion-back-button>
@@ -8,7 +8,7 @@
 </ion-header>
 
 <ion-content>
-  <ion-list>
+  <ion-list lines="none">
     <ion-item>
       <ion-icon
         color="primary"
@@ -17,6 +17,7 @@
       ></ion-icon>
       <ion-label> Show reminder </ion-label>
       <ion-toggle
+        mode="ios"
         slot="end"
         color="primary"
         [(ngModel)]="reminder.show"

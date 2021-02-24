@@ -1,6 +1,6 @@
 <div class="input-group">
   <ng-content></ng-content>
-  <ion-button class="icon-button" (click)="onClear()" *ngIf="value">
+  <ion-button class="outer" (click)="onClear()" *ngIf="value">
     <ion-icon slot="icon-only" color="danger" name="close-outline"></ion-icon>
   </ion-button>
 </div>

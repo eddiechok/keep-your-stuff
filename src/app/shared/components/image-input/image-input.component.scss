@@ -1,9 +1,7 @@
 .upload-container {
   position: relative;
   padding-top: 50%;
-  background-position: center;
-  background-size: contain;
-  background-repeat: no-repeat;
+  background: var(--ion-color-step-100);
   border-radius: var(--border-radius-1);
 }
 
@@ -22,6 +20,18 @@
   border-radius: var(--border-radius-1);
   background-color: var(--primary-bg);
   box-shadow: var(--primary-inner-effect);
+}
+
+.with-photo {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-radius: var(--border-radius-1);
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
 }
 
 app-add-image-svg {

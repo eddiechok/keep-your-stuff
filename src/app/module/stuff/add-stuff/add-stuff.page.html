@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header appMode>
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home"></ion-back-button>
@@ -36,10 +36,13 @@
           <div appControlErrorContainer class="input-group">
             <ion-item (click)="onSelectCategory()">
               <ion-label position="floating"> Category </ion-label>
-              <ion-input type="hidden" formControlName="category"></ion-input>
+              <ion-input
+                class="ion-hide"
+                formControlName="category"
+              ></ion-input>
               <ion-input [value]="selected.category" readonly></ion-input>
             </ion-item>
-            <ion-button class="icon-button" (click)="onSelectCategory()">
+            <ion-button class="outer" (click)="onSelectCategory()">
               <ion-icon name="list-outline" slot="icon-only"></ion-icon>
             </ion-button>
           </div>
@@ -50,10 +53,13 @@
           <div appControlErrorContainer class="input-group">
             <ion-item (click)="onSelectLocation()">
               <ion-label position="floating"> Location </ion-label>
-              <ion-input type="hidden" formControlName="location"></ion-input>
+              <ion-input
+                class="ion-hide"
+                formControlName="location"
+              ></ion-input>
               <ion-input [value]="selected.location" readonly></ion-input>
             </ion-item>
-            <ion-button class="icon-button" (click)="onSelectLocation()">
+            <ion-button class="outer" (click)="onSelectLocation()">
               <ion-icon name="location-outline" slot="icon-only"></ion-icon>
             </ion-button>
           </div>
@@ -77,6 +83,7 @@
             <ion-item>
               <ion-label position="floating">Expiry Date</ion-label>
               <ion-datetime
+                mode="ios"
                 formControlName="expiryDate"
                 min="1970"
                 max="2200"

@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header appMode>
   <ion-toolbar>
     <ion-title> {{ id ? "Edit" : "Add" }} Location </ion-title>
     <ion-buttons slot="primary">
@@ -34,13 +34,13 @@
           class="ion-text-center"
         >
           <ion-button
-            color="light"
+            class="outer"
             (click)="onSelectColor(color)"
-            [class.selected]="form.get('color').value === color"
+            [class.selected-icon]="form.get('color').value === color"
           >
             <ion-icon
               [color]="color"
-              name="location"
+              name="location-outline"
               slot="icon-only"
             ></ion-icon>
           </ion-button>
