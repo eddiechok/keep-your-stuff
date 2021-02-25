@@ -1,6 +1,5 @@
 import { Component, OnInit } from "@angular/core";
 import { Plugins } from "@capacitor/core";
-import { User } from "@codetrix-studio/capacitor-google-auth/dist/esm/user";
 import {
   LoadingController,
   NavController,

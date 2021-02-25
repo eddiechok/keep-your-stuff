@@ -1,9 +1,10 @@
+import { AdMob } from "@admob-plus/ionic/ngx";
 import { Component } from "@angular/core";
-
-import { Platform } from "@ionic/angular";
+import { Plugins } from "@capacitor/core";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 import { StatusBar } from "@ionic-native/status-bar/ngx";
-import { Plugins } from "@capacitor/core";
+import { Platform } from "@ionic/angular";
+import { environment } from "src/environments/environment";
 import { NotificationService } from "./shared/services/notification.service";
 
 @Component({
@@ -16,13 +17,14 @@ export class AppComponent {
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private admob: AdMob
   ) {
     this.initializeApp();
   }
 
   initializeApp() {
-    this.platform.ready().then(() => {
+    this.platform.ready().then(async () => {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
       this.notificationService.initialize();
@@ -32,6 +34,21 @@ export class AppComponent {
         const isDarkMode = !!JSON.parse(data.value);
         document.body.classList.toggle("dark", isDarkMode);
       });
+
+      // initialize app
+      if (this.platform.is("cordova")) {
+        await this.admob.start();
+        const interstitial = new this.admob.InterstitialAd({
+          adUnitId: environment.adUnitID
+        });
+        await interstitial.load();
+        await interstitial.show();
+
+        // const banner = new this.admob.BannerAd({
+        //   adUnitId: "ca-app-pub-3940256099942544/6300978111"
+        // });
+        // await banner.show();
+      }
     });
   }
 }

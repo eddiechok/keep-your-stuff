@@ -1,3 +1,4 @@
+import { AdMob } from "@admob-plus/ionic/ngx";
 import { HttpClient, HttpClientModule } from "@angular/common/http";
 import { InjectionToken, NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
@@ -43,6 +44,7 @@ import { MobileDbService } from "./shared/services/mobile-db.service";
     SQLitePorter,
     SQLite,
     GooglePlus,
+    AdMob,
     // {provide: SQLitePorter, deps: [Platform], useFactory: (platform: Platform) => platform.is("cordova") ? new SQLitePorter() : new SqlitePorterMock()},
     // {provide: SQLite, deps: [Platform], useFactory: (platform: Platform) => platform.is("cordova") ? new SQLite() : new SQLiteMock()},
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
