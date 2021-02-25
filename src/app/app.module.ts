@@ -1,6 +1,6 @@
 import { AdMob } from "@admob-plus/ionic/ngx";
 import { HttpClient, HttpClientModule } from "@angular/common/http";
-import { InjectionToken, NgModule } from "@angular/core";
+import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { RouteReuseStrategy } from "@angular/router";
 import { GooglePlus } from "@ionic-native/google-plus/ngx";
@@ -10,6 +10,7 @@ import { SQLitePorter } from "@ionic-native/sqlite-porter/ngx";
 import { SQLite } from "@ionic-native/sqlite/ngx";
 import { StatusBar } from "@ionic-native/status-bar/ngx";
 import {
+  ActionSheetController,
   AlertController,
   IonicModule,
   IonicRouteStrategy,
@@ -18,6 +19,7 @@ import {
 import { IonicStorageModule, Storage } from "@ionic/storage";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
+import { CustomActionSheetController } from "./shared/controllers/custom-action-sheet.controller";
 import { CustomAlertController } from "./shared/controllers/custom-alert.controller";
 import { DbService } from "./shared/services/db.service";
 import { MobileDbService } from "./shared/services/mobile-db.service";
@@ -68,6 +70,10 @@ import { MobileDbService } from "./shared/services/mobile-db.service";
     {
       provide: AlertController,
       useClass: CustomAlertController
+    },
+    {
+      provide: ActionSheetController,
+      useClass: CustomActionSheetController
     }
   ],
   bootstrap: [AppComponent]
