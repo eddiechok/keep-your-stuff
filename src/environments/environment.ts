@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  adUnitID: "ca-app-pub-3940256099942544/1033173712"
+  androidAdUnitID: "ca-app-pub-3940256099942544/1033173712",
+  iosAdUnitID: "ca-app-pub-3940256099942544/4411468910"
 };
 
 /*

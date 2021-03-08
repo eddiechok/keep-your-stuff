@@ -1,9 +1,10 @@
+import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Plugins } from "@capacitor/core";
 import { GooglePlus } from "@ionic-native/google-plus/ngx";
 import { Platform } from "@ionic/angular";
-import { combineLatest } from "rxjs";
-import { switchMap } from "rxjs/operators";
+import { combineLatest, ReplaySubject, throwError } from "rxjs";
+import { catchError, switchMap, take, tap } from "rxjs/operators";
 import { DbService } from "src/app/shared/services/db.service";
 import { GoogleUserData } from "./backup.model";
 
@@ -11,12 +12,36 @@ import { GoogleUserData } from "./backup.model";
   providedIn: "root"
 })
 export class BackupService {
+  private _accessToken$ = new ReplaySubject(1);
+  private googleSignInOptions = {
+    scopes:
+      "https://www.googleapis.com/auth/drive.metadata https://www.googleapis.com/auth/drive.file"
+  };
+
   constructor(
     private db: DbService,
     private platform: Platform,
-    private googlePlus: GooglePlus
+    private googlePlus: GooglePlus,
+    private http: HttpClient
   ) {
-    gapi.load("client", this.initClient.bind(this));
+    this.init();
+    // gapi.load("client", {
+    //   callback: this.initClient.bind(this),
+    //   onerror: function (a) {
+    //     // Handle loading error.
+    //     console.log("gapi.client loaded error!!!");
+    //     console.log(JSON.stringify(a));
+    //   },
+    //   timeout: 5000, // 5 seconds.
+    //   ontimeout: function () {
+    //     // Handle timeout.
+    //     alert("gapi.client could not load in a timely manner!");
+    //   }
+    // });
+  }
+
+  get accessToken$() {
+    return this._accessToken$.pipe(take(1));
   }
 
   get fileName() {
@@ -28,15 +53,17 @@ export class BackupService {
   }
 
   googleSignIn() {
-    return this.googlePlus.login({}).then((userData: GoogleUserData) => {
-      gapi.client.setToken({
-        access_token: userData.accessToken
+    return this.googlePlus
+      .login({ ...this.googleSignInOptions })
+      .then((userData: GoogleUserData) => {
+        // gapi.client.setToken({
+        //   access_token: userData.accessToken
+        // });
+        Plugins.Storage.set({
+          key: "userData",
+          value: JSON.stringify(userData)
+        });
       });
-      Plugins.Storage.set({
-        key: "userData",
-        value: JSON.stringify(userData)
-      });
-    });
     // return Plugins.GoogleAuth.signIn().then(userData => {
     //   console.log(userData.authentication.accessToken);
     //   gapi.client.setToken({
@@ -54,43 +81,38 @@ export class BackupService {
     // return Plugins.GoogleAuth.signOut();
   }
 
-  async initClient() {
-    const [userData]: [GoogleUserData, any] = await Promise.all([
-      this.googlePlus.trySilentLogin({}),
-      gapi.client.init({
-        apiKey: "AIzaSyD4Y1svAZMQD5B2DDpXPdjsXGHAc9qA_MA",
-        clientId:
-          "500356655488-aumpajve7a9k0iqs5iai290hs0l4jn4n.apps.googleusercontent.com",
-        discoveryDocs: [
-          "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"
-        ]
+  init() {
+    Promise.all([
+      this.googlePlus.trySilentLogin({
+        ...this.googleSignInOptions
       })
-    ]);
-
-    gapi.client.setToken({
-      access_token: userData.accessToken
-    });
-    Plugins.Storage.set({
-      key: "userData",
-      value: JSON.stringify(userData)
+      // gapi.client.init({
+      //   apiKey: "AIzaSyD4Y1svAZMQD5B2DDpXPdjsXGHAc9qA_MA",
+      //   clientId:
+      //     "500356655488-aumpajve7a9k0iqs5iai290hs0l4jn4n.apps.googleusercontent.com",
+      //   discoveryDocs: [
+      //     "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"
+      //   ]
+      // })
+    ]).then(([userData]: [GoogleUserData, any]) => {
+      // gapi.client.setToken({
+      //   access_token: userData.accessToken
+      // });
+      Plugins.Storage.set({
+        key: "userData",
+        value: JSON.stringify(userData)
+      });
+      this._accessToken$.next(userData.accessToken);
     });
   }
-
-  // private setAccessToken(data: string) {
-  //   const userData = JSON.parse(data) as GoogleUserData;
-  //   gapi.client.setToken({
-  //     access_token: userData.accessToken
-  //   });
-  // }
 
   export() {
     return combineLatest([
       this.db.export(),
       Plugins.Storage.get({ key: "backupFileId" })
     ]).pipe(
-      switchMap(async ([dbData, backupFileId]) => {
+      switchMap(([dbData, backupFileId]) => {
         const fileId = backupFileId?.value;
-
         if (fileId) {
           return this.updateFile(dbData, fileId);
         } else {
@@ -100,7 +122,7 @@ export class BackupService {
     );
   }
 
-  private async addFile(dbData: any) {
+  private addFile(dbData: any) {
     const boundary = "xyz";
     const multipartBody = this.getMultipartBody(
       dbData,
@@ -109,33 +131,40 @@ export class BackupService {
       },
       boundary
     );
-    try {
-      const response = await gapi.client.request({
-        path: `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart`,
-        method: "POST",
-        headers: {
-          "Content-Type": `multipart/related; boundary=${boundary}`
-        },
-        body: multipartBody
-      });
-
-      // add fileId to Storage
-      Plugins.Storage.set({
-        key: "backupFileId",
-        value: response.result.id
-      });
-
-      return response;
-    } catch (errRes) {
-      if (errRes.result.error.code === 401) {
-        throw new Error("unauthorized");
-      } else {
-        throw new Error("unknown_error");
-      }
-    }
+    return this.accessToken$.pipe(
+      switchMap(accessToken => {
+        return this.http.post<any>(
+          `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart`,
+          multipartBody,
+          {
+            headers: {
+              "Content-Type": `multipart/related; boundary=${boundary}`,
+              Authorization: `Bearer ${accessToken}`
+            }
+          }
+        );
+      }),
+      tap(response => {
+        console.log("add file");
+        console.log(response);
+        // add fileId to Storage
+        Plugins.Storage.set({
+          key: "backupFileId",
+          value: response.id
+        });
+      }),
+      catchError(errRes => {
+        console.log(errRes);
+        if (errRes.status === 401) {
+          throw new Error("unauthorized");
+        } else {
+          throw new Error("unknown_error");
+        }
+      })
+    );
   }
 
-  private async updateFile(dbData: any, fileId: string) {
+  private updateFile(dbData: any, fileId: string) {
     const boundary = "xyz";
     const multipartBody = this.getMultipartBody(
       dbData,
@@ -145,37 +174,42 @@ export class BackupService {
       },
       boundary
     );
-    try {
-      const response = await gapi.client.request({
-        path: `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=multipart`,
-        method: "PATCH",
-        headers: {
-          "Content-Type": `multipart/related; boundary=${boundary}`
-        },
-        body: multipartBody
-      });
-
-      if (!fileId) {
-        Plugins.Storage.set({
-          key: "backupFileId",
-          value: response.result.id
-        });
-      }
-      return response;
-    } catch (errRes) {
-      if (errRes.result.error.code === 401) {
-        throw new Error("unauthorized");
-      } else if (
-        errRes.result.error.errors &&
-        errRes.result.error.errors.length > 0 &&
-        errRes.result.error.errors[0].reason === "notFound"
-      ) {
-        const response = await this.addFile(dbData);
-        return response;
-      } else {
-        throw new Error("unknown_error");
-      }
-    }
+    return this.accessToken$.pipe(
+      switchMap(accessToken => {
+        return this.http.patch<any>(
+          `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=multipart`,
+          multipartBody,
+          {
+            headers: {
+              "Content-Type": `multipart/related; boundary=${boundary}`,
+              Authorization: `Bearer ${accessToken}`
+            }
+          }
+        );
+      }),
+      tap(response => {
+        if (!fileId) {
+          Plugins.Storage.set({
+            key: "backupFileId",
+            value: response.id
+          });
+        }
+      }),
+      catchError(errRes => {
+        console.log(errRes);
+        if (errRes.status === 401) {
+          throw new Error("unauthorized");
+        } else if (
+          errRes.error.error.errors &&
+          errRes.error.error.errors.length > 0 &&
+          errRes.error.error.errors[0].reason === "notFound"
+        ) {
+          return this.addFile(dbData);
+        } else {
+          throw new Error("unknown_error");
+        }
+      })
+    );
   }
 
   private getMultipartBody(
@@ -197,41 +231,55 @@ export class BackupService {
   }
 
   import() {
-    return gapi.client
-      .request({
-        path: "https://www.googleapis.com/drive/v3/files",
-        params: {
-          q: `name = '${this.fileName}' and trashed = false`
+    return this.accessToken$.pipe(
+      switchMap(accessToken => {
+        return this.http.get<any>("https://www.googleapis.com/drive/v3/files", {
+          params: {
+            q: `name = '${this.fileName}' and trashed = false`
+          },
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
+      }),
+      catchError(errRes => {
+        if (errRes.status === 401) {
+          throw new Error("unauthorized");
+        } else {
+          throw new Error("unknown_error");
         }
-      })
-      .then(res => {
-        if (res.result.files.length > 0) {
-          const fileId = res.result.files[0].id;
+      }),
+      switchMap(res => {
+        if (res.files.length > 0) {
+          const fileId = res.files[0].id;
           Plugins.Storage.set({ key: "backupFileId", value: fileId });
           return this.downloadFile(fileId);
         } else {
           throw new Error("file_not_found");
         }
       })
-      .catch(errRes => {
-        if (errRes.result.error.code === 401) {
-          throw new Error("unauthorized");
-        } else {
-          throw new Error("unknown_error");
-        }
-      });
+    );
   }
 
   private downloadFile(fileId: string) {
-    return gapi.client
-      .request({
-        path: `https://www.googleapis.com/drive/v3/files/${fileId}`,
-        params: {
-          alt: "media"
-        }
+    return this.accessToken$.pipe(
+      switchMap(accessToken => {
+        return this.http.get(
+          `https://www.googleapis.com/drive/v3/files/${fileId}`,
+          {
+            params: {
+              alt: "media"
+            },
+            headers: {
+              Authorization: `Bearer ${accessToken}`
+            },
+            responseType: "text"
+          }
+        );
+      }),
+      switchMap(res => {
+        return this.db.import(res);
       })
-      .then(res => {
-        this.db.import(res.body).subscribe();
-      });
+    );
   }
 }

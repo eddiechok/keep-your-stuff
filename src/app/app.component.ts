@@ -39,7 +39,9 @@ export class AppComponent {
       if (this.platform.is("cordova")) {
         await this.admob.start();
         const interstitial = new this.admob.InterstitialAd({
-          adUnitId: environment.adUnitID
+          adUnitId: this.platform.is("ios")
+            ? environment.iosAdUnitID
+            : environment.androidAdUnitID
         });
         await interstitial.load();
         await interstitial.show();

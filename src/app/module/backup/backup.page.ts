@@ -99,15 +99,14 @@ export class BackupPage implements OnInit {
       })
       .then(loadingEl => {
         loadingEl.present();
-        this.backupService
-          .import()
-          .then(() => {
+        this.backupService.import().subscribe(
+          () => {
             loadingEl.dismiss();
             this.showAlert({
               message: "Your data has been restored."
             });
-          })
-          .catch((err: Error) => {
+          },
+          (err: Error) => {
             loadingEl.dismiss();
             if (err.message === "unauthorized") {
               this.unauthorize();
@@ -121,7 +120,8 @@ export class BackupPage implements OnInit {
                 color: "danger"
               });
             }
-          });
+          }
+        );
       });
   }
 }
