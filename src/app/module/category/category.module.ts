@@ -15,7 +15,6 @@ import { SharedModule } from "src/app/shared/shared.module";
     IonicModule,
     ReactiveFormsModule,
     SharedModule
-  ],
-  entryComponents: [AddCategoryModalComponent]
+  ]
 })
 export class CategoryModule {}

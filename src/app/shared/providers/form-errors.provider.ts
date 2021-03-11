@@ -3,7 +3,8 @@ import { InjectionToken } from "@angular/core";
 const defaultErrors = {
   required: () => `This field is required`,
   minlength: ({ requiredLength, actualLength }) =>
-    `Expect ${requiredLength} but got ${actualLength}`
+    `Expect ${requiredLength} but got ${actualLength}`,
+  min: ({ min }) => `This field required minimum ${min}`
 };
 
 export type FormErrors = typeof defaultErrors;

@@ -1,5 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { Plugins } from "@capacitor/core";
+import { AlertController } from "@ionic/angular";
+import { SettingService } from "./setting.service";
 
 @Component({
   selector: "app-setting",
@@ -7,6 +9,7 @@ import { Plugins } from "@capacitor/core";
   styleUrls: ["./setting.page.scss"]
 })
 export class SettingPage implements OnInit {
+  currency = "";
   menus = [
     {
       id: 1,
@@ -35,9 +38,15 @@ export class SettingPage implements OnInit {
   ];
   isDarkMode = false;
 
-  constructor() {}
+  constructor(
+    private settingService: SettingService,
+    private alertCtrl: AlertController
+  ) {}
 
   async ngOnInit() {
+    this.settingService.currency.then(currency => {
+      this.currency = currency || "USD";
+    });
     const darkMode = await Plugins.Storage.get({ key: "isDarkMode" });
     this.isDarkMode = !!JSON.parse(darkMode.value);
   }
@@ -48,5 +57,31 @@ export class SettingPage implements OnInit {
       key: "isDarkMode",
       value: this.isDarkMode.toString()
     });
+  }
+
+  async showEditCurrencyModal() {
+    const alert = await this.alertCtrl.create({
+      header: "Currency Unit",
+      inputs: [
+        {
+          name: "currency",
+          value: this.currency
+        }
+      ],
+      buttons: [
+        {
+          text: "Cancel",
+          role: "cancel"
+        },
+        {
+          text: "OK",
+          handler: data => {
+            this.currency = data.currency;
+            this.settingService.setCurrency(data.currency);
+          }
+        }
+      ]
+    });
+    alert.present();
   }
 }

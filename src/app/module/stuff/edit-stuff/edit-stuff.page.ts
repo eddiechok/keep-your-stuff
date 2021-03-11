@@ -20,6 +20,7 @@ import { StuffService } from "../stuff.service";
 import { NotificationService } from "src/app/shared/services/notification.service";
 import { Stuff } from "../stuff.model";
 import { CameraPhoto } from "@capacitor/core";
+import { SettingService } from "../../setting/setting.service";
 
 @Component({
   selector: "app-edit-stuff",
@@ -33,7 +34,9 @@ export class EditStuffPage implements OnInit, OnDestroy {
     imgUrl: [null],
     category: [null, Validators.required],
     location: [null, Validators.required],
-    expiryDate: [null]
+    expiryDate: [null],
+    quantity: [null],
+    price: [null]
   });
   isLoading = false;
   selected = {
@@ -41,6 +44,7 @@ export class EditStuffPage implements OnInit, OnDestroy {
     location: ""
   };
   editingStuff: Stuff;
+  currency = "";
   private categories: Category[] = [];
   private locations: Location[] = [];
   private sub: Subscription;
@@ -56,11 +60,17 @@ export class EditStuffPage implements OnInit, OnDestroy {
     private loadingCtrl: LoadingController,
     private route: ActivatedRoute,
     private navCtrl: NavController,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private settingService: SettingService
   ) {}
 
   ngOnInit() {
     this.isLoading = true;
+
+    // get currency
+    this.settingService.currency.then(currency => {
+      this.currency = currency;
+    });
 
     const stuffObs$ = this.route.paramMap.pipe(
       map(paramMap => {
@@ -91,7 +101,9 @@ export class EditStuffPage implements OnInit, OnDestroy {
           imgUrl: stuff.imgUrl,
           category: stuff.categoryId,
           location: stuff.locationId,
-          expiryDate: stuff.expiryDate
+          expiryDate: stuff.expiryDate,
+          quantity: stuff.quantity,
+          price: stuff.price
         });
         this.selected.category = this.categories.find(
           category => category.id === stuff.categoryId

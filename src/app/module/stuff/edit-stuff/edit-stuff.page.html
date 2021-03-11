@@ -72,6 +72,22 @@
       </ion-row>
       <ion-row>
         <ion-col>
+          <ion-item appControlErrorContainer>
+            <ion-label position="floating">Quantity</ion-label>
+            <ion-input formControlName="quantity" type="number"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <ion-item appControlErrorContainer>
+            <ion-label position="floating">Price ({{currency}})</ion-label>
+            <ion-input formControlName="price" type="number"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
           <app-datetime-wrapper>
             <ion-item>
               <ion-label position="floating">Expiry Date</ion-label>

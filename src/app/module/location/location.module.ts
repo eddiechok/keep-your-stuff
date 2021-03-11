@@ -15,7 +15,6 @@ import { SharedModule } from "src/app/shared/shared.module";
     ReactiveFormsModule,
     IonicModule,
     SharedModule
-  ],
-  entryComponents: [AddLocationModalComponent]
+  ]
 })
 export class LocationModule {}

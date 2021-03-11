@@ -10,6 +10,8 @@ export type Stuff = {
   expiryDate?: string;
   categoryId: number;
   locationId: number;
+  price?: number;
+  quantity?: number;
 };
 
 export type StuffWithRelations = {
@@ -21,4 +23,6 @@ export type StuffWithRelations = {
   imgUrl?: string;
   desc?: string;
   expiryDate?: string;
+  price?: number;
+  quantity?: number;
 };

@@ -93,6 +93,10 @@ export class StuffService {
     let savePicObs$: Observable<any> = of(null);
     let filepath: string = null;
 
+    // remove extra decimals
+    stuff.quantity = stuff.quantity && parseInt(stuff.quantity.toString());
+    stuff.price = stuff.price && parseFloat(stuff.price.toFixed(2));
+
     if (image?.webPath) {
       savePicObs$ = from(
         // save picture into filesystem and get the filepath
@@ -103,7 +107,10 @@ export class StuffService {
     }
     return savePicObs$.pipe(
       switchMap(() => {
-        const addedStuff = { ...stuff, filepath };
+        const addedStuff = {
+          ...stuff,
+          filepath
+        };
         delete addedStuff.imgUrl; // do not add imgUrl into db
 
         return combineLatest([
@@ -129,6 +136,10 @@ export class StuffService {
     let filepath: string = null;
     const isOldPicChange = !data.imgUrl || image?.webPath;
 
+    // remove extra decimals
+    data.quantity = data.quantity && parseInt(data.quantity.toString());
+    data.price = data.price && parseFloat(data.price.toFixed(2));
+
     if (image?.webPath) {
       savePicObs$ = from(
         this.photoService.savePicture(image).then(file => {
@@ -139,7 +150,10 @@ export class StuffService {
 
     return savePicObs$.pipe(
       switchMap(() => {
-        const updatedStuff = { ...data };
+        const updatedStuff = {
+          ...data
+        };
+
         // if the imgUrl is empty or user has update new image, else dont update filepath
         if (isOldPicChange) {
           updatedStuff.filepath = filepath;

@@ -18,7 +18,8 @@ import { LocationService } from "../../location/location.service";
 import { StuffService } from "../stuff.service";
 import { NotificationService } from "src/app/shared/services/notification.service";
 import { map, switchMap } from "rxjs/operators";
-import { CameraPhoto } from "@capacitor/core";
+import { CameraPhoto, Plugins } from "@capacitor/core";
+import { SettingService } from "../../setting/setting.service";
 
 @Component({
   selector: "app-add-stuff",
@@ -32,7 +33,9 @@ export class AddStuffPage implements OnInit, OnDestroy {
     imgUrl: [null],
     category: [null, Validators.required],
     location: [null, Validators.required],
-    expiryDate: [null]
+    expiryDate: [null],
+    price: [null, Validators.min(0)],
+    quantity: [null, Validators.min(0)]
   });
   isLoading = false;
   defaultTime = new Date(new Date().setHours(9, 0)).toISOString();
@@ -40,6 +43,7 @@ export class AddStuffPage implements OnInit, OnDestroy {
     category: "",
     location: ""
   };
+  currency = "";
 
   private categories: Category[] = [];
   private locations: Location[] = [];
@@ -57,10 +61,16 @@ export class AddStuffPage implements OnInit, OnDestroy {
     private alertCtrl: AlertController,
     private router: Router,
     private notificationService: NotificationService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private settingService: SettingService
   ) {}
 
   ngOnInit() {
+    // get currency
+    this.settingService.currency.then(currency => {
+      this.currency = currency;
+    });
+
     this.sub = combineLatest([
       this.route.paramMap,
       this.categoryService.categories,

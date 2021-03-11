@@ -26,7 +26,6 @@ import { MobileDbService } from "./shared/services/mobile-db.service";
 
 @NgModule({
   declarations: [AppComponent],
-  entryComponents: [],
   imports: [
     BrowserModule,
     IonicModule.forRoot({

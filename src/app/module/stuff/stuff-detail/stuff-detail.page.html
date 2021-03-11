@@ -55,6 +55,20 @@
       <ion-row>
         <ion-col>
           <ion-label>
+            <p>Quantity</p>
+            <h2>{{(stuff.quantity) || 0}}</h2>
+          </ion-label>
+        </ion-col>
+        <ion-col>
+          <ion-label>
+            <p>Price</p>
+            <h2>{{((stuff.price || 0) | currency:currency)}}</h2>
+          </ion-label>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <ion-label>
             <p>Expiry Date</p>
             <h2>{{(stuff.expiryDate | date) || "-"}}</h2>
           </ion-label>

@@ -14,6 +14,7 @@ import {
 } from "rxjs/operators";
 import { CategoryService } from "../../category/category.service";
 import { LocationService } from "../../location/location.service";
+import { SettingService } from "../../setting/setting.service";
 import { StuffWithRelations } from "../stuff.model";
 import { StuffService } from "../stuff.service";
 
@@ -25,6 +26,7 @@ import { StuffService } from "../stuff.service";
 export class StuffDetailPage implements OnInit, OnDestroy {
   stuff: StuffWithRelations;
   isLoading = false;
+  currency = "";
   private sub: Subscription;
 
   constructor(
@@ -34,10 +36,16 @@ export class StuffDetailPage implements OnInit, OnDestroy {
     private categoryService: CategoryService,
     private locationService: LocationService,
     private alertCtrl: AlertController,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private settingService: SettingService
   ) {}
 
   ngOnInit() {
+    //get currency
+    this.settingService.currency.then(currency => {
+      this.currency = currency;
+    });
+
     this.route.paramMap
       .pipe(
         map(paramMap => {
