@@ -87,9 +87,9 @@ export class BackupService {
         ...this.googleSignInOptions
       })
       // gapi.client.init({
-      //   apiKey: "AIzaSyD4Y1svAZMQD5B2DDpXPdjsXGHAc9qA_MA",
+      //   apiKey: "",
       //   clientId:
-      //     "500356655488-aumpajve7a9k0iqs5iai290hs0l4jn4n.apps.googleusercontent.com",
+      //     "",
       //   discoveryDocs: [
       //     "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"
       //   ]
